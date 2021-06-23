@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>PS2 Alert Notify 🚨</title>
+</head>
+
+<body class="bg-light">
+    <!-- https://stackoverflow.com/questions/42252443/vertical-align-center-in-bootstrap -->
+    <div class="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+        <h1 class="display-5 fw-bold">PS2 Alert Notify 🚨</h1>
+        <p class="lead">Select the Planetside 2 server(s) (hold CTRL to select multiple) to subscribe to alert
+            notifications for and
+            and press the subscribe button. When prompted, allow notifications.</p>
+        <form>
+            <div class="mb-3">
+                <select class="form-select" multiple>
+                    <!-- https://ps2.fisu.pw/api/population/
+                            World parameters
+                            -->
+                    <option value="1">Connery</option>
+                    <option value="10">Miller</option>
+                    <option value="13">Cobalt</option>
+                    <option value="17">Emerald</option>
+                    <option value="19">Jaeger</option>
+                    <option value="40">SolTech</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="subscribe()">Subscribe 🔔</button>
+            <button type="button" class="btn btn-warning" onclick="unsubscribe()">Unsubscribe 🔕</button>
+        </form>
+    </div>
+    <script src="index.js"></script>
+</body>
+
+</html>
