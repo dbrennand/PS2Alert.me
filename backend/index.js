@@ -37,12 +37,11 @@ app.post('/add-subscription', function (req, res) {
 app.delete('/remove-subscription', function (req, res) {
   console.log(`Unsubscribing ${req.body.endpoint} from push notifications.`);
   // Remove subscription object from the database
-  db.data.subscriptions.remove({endpoint: req.body.endpoint});
+  db.data.subscriptions.remove({ endpoint: req.body.endpoint });
   await db.write();
   // Successfully deleted resource HTTP status code
   res.status(204);
 });
-
 
 // Start the Express server
 app.listen(port, () => {
