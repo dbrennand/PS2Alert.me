@@ -36,7 +36,7 @@ window.subscribe = async () => {
           applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
         });
         // Send subscription information to the backend API
-        await fetch('/subscription', {
+        await fetch('/add-subscription', {
           method: 'POST',
           body: JSON.stringify(subscription),
           headers: {
