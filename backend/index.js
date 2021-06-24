@@ -1,12 +1,22 @@
 // Import required libraries
-import express from 'express';
-import helmet from 'helmet';
+import webpush from 'web-push';
 import path from 'path';
 import { Low, JSONFile } from 'lowdb'
-import webpush from './webpush';
+import express from 'express';
+import helmet from 'helmet';
 // Fix for __dirname: https://github.com/nodejs/help/issues/2907#issuecomment-757446568
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Setup webpush vapid details
+const publicVapidKey = process.env.PUBLICVAPIDKEY;
+const privateVapidKey = process.env.PRIVATEVAPIDKEY;
+const contactEmail = process.env.CONTACTEMAIL;
+webpush.setVapidDetails(
+  contactEmail,
+  publicVapidKey,
+  privateVapidKey,
+);
 
 // Setup database using lowdb
 // Creates db.json at backend/db.json
@@ -29,8 +39,6 @@ app.use(
     contentSecurityPolicy: false,
   })
 );
-// Webpush set vapid details
-webpush();
 
 // Serve all files in frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
