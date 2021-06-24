@@ -33,17 +33,17 @@ app.post('/add-subscription', async (req, res) => {
   db.data.subscriptions.push(req.body);
   await db.write();
   // Successfully created resource HTTP status code
-  res.status(201);
+  res.sendStatus(201);
 });
 
 // /remove-subscription API endpoint
-app.delete('/remove-subscription', async (req, res) => {
+app.post('/remove-subscription', async (req, res) => {
   console.log(`Unsubscribing ${req.body.endpoint} from push notifications.`);
   // Remove subscription object from the database
   db.data.subscriptions = db.data.subscriptions.filter(endpoint => endpoint === req.body.endpoint);
   await db.write();
   // Successfully deleted resource HTTP status code
-  res.status(204);
+  res.sendStatus(200);
 });
 
 // Start the Express server
