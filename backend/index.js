@@ -27,7 +27,7 @@ app.use(
   })
 );
 app.use(express.json());
-const port = 3000
+const port = process.env.PORT;
 
 // Serve all files in frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
