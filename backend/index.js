@@ -22,13 +22,13 @@ db.data ||= { subscriptions: [] }
 
 // Setup Express server
 const app = express();
+const port = process.env.PORT;
+app.use(express.json());
 app.use(
   helmet({
     contentSecurityPolicy: false,
   })
 );
-app.use(express.json());
-const port = process.env.PORT;
 // Webpush set vapid details
 webpush();
 
