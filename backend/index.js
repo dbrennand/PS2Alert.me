@@ -37,7 +37,7 @@ app.post('/add-subscription', async (req, res) => {
 });
 
 // /remove-subscription API endpoint
-app.post('/remove-subscription', async (req, res) => {
+app.delete('/remove-subscription', async (req, res) => {
   console.log(`Unsubscribing ${req.body.endpoint} from push notifications.`);
   // Remove subscription object from the database
   db.data.subscriptions = db.data.subscriptions.filter(endpoint => endpoint === req.body.endpoint);

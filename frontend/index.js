@@ -63,7 +63,7 @@ window.unsubscribe = async () => {
       // Send backend API request to unsubscribe from push notifications
       console.log('Removing subscription.')
       await fetch('/remove-subscription', {
-        method: 'POST',
+        method: 'DELETE',
         body: JSON.stringify({ endpoint: subscription.endpoint }),
         headers: {
           'Content-Type': 'application/json'
