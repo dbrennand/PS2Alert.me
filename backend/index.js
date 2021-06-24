@@ -1,5 +1,6 @@
 // Import required libraries
 import express from 'express';
+import helmet from 'helmet';
 import path from 'path';
 import { Low, JSONFile } from 'lowdb'
 // Fix for __dirname: https://github.com/nodejs/help/issues/2907#issuecomment-757446568
@@ -20,11 +21,16 @@ db.data ||= { subscriptions: [] }
 
 // Setup Express server
 const app = express();
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
+app.use(express.json());
 const port = 3000
 
 // Serve all files in frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
-app.use(express.json());
 
 // /add-subscription API endpoint
 app.post('/add-subscription', async (req, res) => {

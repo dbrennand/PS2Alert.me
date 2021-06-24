@@ -20,6 +20,7 @@
   "homepage": "https://github.com/dbrennand/ps2-alert-notify",
   "dependencies": {
     "express": "^4.17.1",
+    "helmet": "^4.6.0",
     "lowdb": "^2.1.0",
     "web-push": "^3.4.4"
   }
