@@ -1,5 +1,5 @@
 // Public VAPID key
-const publicVapidKey = '';
+const publicVapidKey = process.env.PUBLICVAPIDKEY;
 
 // Function taken from: https://www.npmjs.com/package/web-push#using-vapid-key-for-applicationserverkey
 const urlBase64ToUint8Array = (base64String) => {
@@ -15,6 +15,17 @@ const urlBase64ToUint8Array = (base64String) => {
     outputArray[i] = rawData.charCodeAt(i);
   }
   return outputArray;
+};
+
+// Code snippet adapted from: https://github.com/fgerschau/web-push-notification-example/blob/master/client/index.js
+const getSubscribedElement = () => document.getElementById('subscribed');
+const getUnsubscribedElement = () => document.getElementById('unsubscribed');
+
+// Function to set subscribe message based on whether the user is subscribed to push notifications or not
+const setSubscribeMessage = async (registration) => {
+  const subscription = await registration.pushManager.getSubscription();
+  getSubscribedElement().setAttribute('style', `display: ${subscription ? 'block' : 'none'};`);
+  getUnsubscribedElement().setAttribute('style', `display: ${subscription ? 'none' : 'block'};`);
 };
 
 // Code inspiration from: https://felixgerschau.com/web-push-notifications-tutorial/
@@ -43,6 +54,7 @@ window.subscribe = async () => {
             'Content-Type': 'application/json'
           }
         });
+        setSubscribeMessage(registration);
       });
   } else {
     console.log('Browser does not support Service Workers.');
@@ -75,5 +87,9 @@ window.unsubscribe = async () => {
       console.log('Removing Service Worker.')
       await registration.unregister();
       console.log('Successfully unsubscribed from push notifications.');
+      setSubscribeMessage(registration);
     });
 }
+
+const registration = await navigator.serviceWorker.ready;
+setSubscribeMessage(registration);
