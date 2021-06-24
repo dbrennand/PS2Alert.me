@@ -3,6 +3,7 @@ import express from 'express';
 import helmet from 'helmet';
 import path from 'path';
 import { Low, JSONFile } from 'lowdb'
+import webpush from './webpush';
 // Fix for __dirname: https://github.com/nodejs/help/issues/2907#issuecomment-757446568
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -28,6 +29,8 @@ app.use(
 );
 app.use(express.json());
 const port = process.env.PORT;
+// Webpush set vapid details
+webpush();
 
 // Serve all files in frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
