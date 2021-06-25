@@ -1,5 +1,5 @@
 // Public VAPID key
-const publicVapidKey = process.env.PUBLICVAPIDKEY;
+const publicVapidKey = "";
 
 // Function taken from: https://www.npmjs.com/package/web-push#using-vapid-key-for-applicationserverkey
 const urlBase64ToUint8Array = (base64String) => {
@@ -18,14 +18,21 @@ const urlBase64ToUint8Array = (base64String) => {
 };
 
 // Code snippet adapted from: https://github.com/fgerschau/web-push-notification-example/blob/master/client/index.js
-const getSubscribedElement = () => document.getElementById('subscribed');
-const getUnsubscribedElement = () => document.getElementById('unsubscribed');
-
 // Function to set subscribe message based on whether the user is subscribed to push notifications or not
-const setSubscribeMessage = async (registration) => {
-  const subscription = await registration.pushManager.getSubscription();
-  getSubscribedElement().setAttribute('style', `display: ${subscription ? 'block' : 'none'};`);
-  getUnsubscribedElement().setAttribute('style', `display: ${subscription ? 'none' : 'block'};`);
+const setSubscribeMessage = async () => {
+  console.log('Setting subscribe message.')
+  const subscribedElement = document.getElementById('subscribed');
+  const unsubscribedElement = document.getElementById('unsubscribed');
+  try {
+    const registration = await navigator.serviceWorker.getRegistration();
+    const subscription = await registration.pushManager.getSubscription();
+    subscribedElement.setAttribute('class', `${subscription ? '': 'd-none'}`);
+    unsubscribedElement.setAttribute('class', `${subscription ? 'd-none': ''}`);
+  } catch (e) {
+    console.log("No registration found. Not subscribed.");
+    subscribedElement.setAttribute('class', 'd-none');
+    unsubscribedElement.setAttribute('class', '');
+  }
 };
 
 // Code inspiration from: https://felixgerschau.com/web-push-notifications-tutorial/
@@ -54,7 +61,7 @@ window.subscribe = async () => {
             'Content-Type': 'application/json'
           }
         });
-        setSubscribeMessage(registration);
+        setSubscribeMessage();
       });
   } else {
     console.log('Browser does not support Service Workers.');
@@ -87,9 +94,8 @@ window.unsubscribe = async () => {
       console.log('Removing Service Worker.')
       await registration.unregister();
       console.log('Successfully unsubscribed from push notifications.');
-      setSubscribeMessage(registration);
+      setSubscribeMessage();
     });
 }
 
-const registration = await navigator.serviceWorker.ready;
-setSubscribeMessage(registration);
+setSubscribeMessage();
