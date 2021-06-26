@@ -19,7 +19,7 @@
             notifications for and press the subscribe button. When prompted, allow notifications.</p>
         <form>
             <div class="mb-3">
-                <select class="form-select" multiple>
+                <select id="server-select" class="form-select" multiple>
                     <!-- https://ps2.fisu.pw/api/population/
                             World parameters
                             -->
@@ -32,7 +32,7 @@
             </div>
             <p id="subscribed">Subscribed to push notifications.</p>
             <p id="unsubscribed">Not subscribed to push notifications.</p>
-            <button type="submit" class="btn btn-primary" onclick="subscribe()">Subscribe 🔔</button>
+            <button type="button" class="btn btn-primary" onclick="subscribe()">Subscribe 🔔</button>
             <button type="button" class="btn btn-warning" onclick="unsubscribe()">Unsubscribe 🔕</button>
         </form>
     </div>
