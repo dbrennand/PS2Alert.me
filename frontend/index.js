@@ -26,8 +26,8 @@ const setSubscribeMessage = async () => {
   try {
     const registration = await navigator.serviceWorker.getRegistration();
     const subscription = await registration.pushManager.getSubscription();
-    subscribedElement.setAttribute('class', `${subscription ? '': 'd-none'}`);
-    unsubscribedElement.setAttribute('class', `${subscription ? 'd-none': ''}`);
+    subscribedElement.setAttribute('class', `${subscription ? '' : 'd-none'}`);
+    unsubscribedElement.setAttribute('class', `${subscription ? 'd-none' : ''}`);
   } catch (e) {
     console.log("No registration found. Not subscribed.");
     subscribedElement.setAttribute('class', 'd-none');
@@ -53,6 +53,11 @@ window.subscribe = async () => {
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
         });
+        // Obtain selected server(s) from select element
+        var selectElement = document.getElementById('server-select');
+        var servers = [...selectElement.selectedOptions]
+          .map(option => option.value);
+        console.log(`Server IDs selected: ${servers}`);
         // Send subscription information to the backend API
         await fetch('/add-subscription', {
           method: 'POST',
