@@ -58,10 +58,15 @@ window.subscribe = async () => {
         var servers = [...selectElement.selectedOptions]
           .map(option => option.value);
         console.log(`Server IDs selected: ${servers}`);
+        // Create object containing subscription data and selected server(s)
+        const data = {
+          server: servers,
+          subscription: subscription
+        };
         // Send subscription information to the backend API
         await fetch('/add-subscription', {
           method: 'POST',
-          body: JSON.stringify(subscription),
+          body: JSON.stringify(data),
           headers: {
             'Content-Type': 'application/json'
           }
