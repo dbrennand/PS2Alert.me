@@ -45,7 +45,7 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 
 // /add-subscription API endpoint
 app.post('/add-subscription', async (req, res) => {
-  console.log(`Subscribing ${req.body.endpoint} for push notifications.`);
+  console.log(`Subscribing ${req.body.subscription.endpoint} for push notifications.`);
   // Add subscription object to database
   db.data.subscriptions.push(req.body);
   await db.write();
@@ -57,7 +57,7 @@ app.post('/add-subscription', async (req, res) => {
 app.delete('/remove-subscription', async (req, res) => {
   console.log(`Unsubscribing ${req.body.endpoint} from push notifications.`);
   // Remove subscription object from the database
-  db.data.subscriptions = db.data.subscriptions.filter(endpoint => endpoint === req.body.endpoint);
+  db.data.subscriptions = db.data.subscriptions.filter(subscription => subscription.endpoint === req.body.endpoint);
   await db.write();
   // Successfully deleted resource HTTP status code
   res.sendStatus(200);
