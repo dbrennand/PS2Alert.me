@@ -53,7 +53,7 @@ window.subscribe = async () => {
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
         });
-        // Obtain selected server(s) from select element
+        // Get selected server(s) from select element
         var selectElement = document.getElementById('server-select');
         var servers = [...selectElement.selectedOptions]
           .map(option => option.value);
