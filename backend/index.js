@@ -5,7 +5,7 @@ import helmet from 'helmet';
 // Fix for __dirname: https://github.com/nodejs/help/issues/2907#issuecomment-757446568
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Import custom functions and schema
+// Import custom functions and model
 import database from './config/database';
 import webpush from './config/webpush';
 import Notify from './models/notifyModel';
