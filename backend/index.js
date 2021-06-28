@@ -1,5 +1,4 @@
 // Import required libraries
-import webpush from 'web-push';
 import path from 'path';
 import { Low, JSONFile } from 'lowdb'
 import express from 'express';
@@ -7,16 +6,6 @@ import helmet from 'helmet';
 // Fix for __dirname: https://github.com/nodejs/help/issues/2907#issuecomment-757446568
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// Setup webpush vapid details
-const publicVapidKey = process.env.PUBLICVAPIDKEY;
-const privateVapidKey = process.env.PRIVATEVAPIDKEY;
-const contactEmail = process.env.CONTACTEMAIL;
-webpush.setVapidDetails(
-  contactEmail,
-  publicVapidKey,
-  privateVapidKey,
-);
 
 // Setup database using lowdb
 // Creates db.json at backend/db.json
@@ -33,6 +22,7 @@ db.data ||= { subscriptions: [] }
 // Setup Express server
 const app = express();
 const port = process.env.PORT;
+const interface = process.env.INTERFACE;
 app.use(express.json());
 app.use(
   helmet({
@@ -65,5 +55,5 @@ app.delete('/remove-subscription', async (req, res) => {
 
 // Start the Express server
 app.listen(port, () => {
-  console.log(`PS2-Alert-Notify listening at http://localhost:${port}`);
+  console.log(`PS2-Alert-Notify listening at http://${interface}:${port}`);
 });
