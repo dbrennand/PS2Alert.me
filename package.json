@@ -22,7 +22,7 @@
     "amqplib": "^0.8.0",
     "express": "^4.17.1",
     "helmet": "^4.6.0",
-    "lowdb": "^2.1.0",
+    "mongoose": "^5.13.0",
     "ps2census": "^2.0.3",
     "web-push": "^3.4.4"
   },
