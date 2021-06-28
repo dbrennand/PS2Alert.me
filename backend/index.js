@@ -1,28 +1,15 @@
 // Import required libraries
 import path from 'path';
-import { Low, JSONFile } from 'lowdb'
 import express from 'express';
 import helmet from 'helmet';
 // Fix for __dirname: https://github.com/nodejs/help/issues/2907#issuecomment-757446568
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Setup database using lowdb
-// Creates db.json at backend/db.json
-const dbFile = path.join(__dirname, 'db.json');
-const adapter = new JSONFile(dbFile);
-const db = new Low(adapter);
-
-// Read data from database JSON file, this will set db.data content
-await db.read();
-// If database did not exist previously, db.data will be null
-// So, populate with default data if this is the case
-db.data ||= { subscriptions: [] }
-
 // Setup Express server
-const app = express();
 const port = process.env.PORT;
 const interface = process.env.INTERFACE;
+const app = express();
 app.use(express.json());
 app.use(
   helmet({
@@ -37,8 +24,7 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 app.post('/add-subscription', async (req, res) => {
   console.log(`Subscribing ${req.body.subscription.endpoint} for push notifications.`);
   // Add subscription object to database
-  db.data.subscriptions.push(req.body);
-  await db.write();
+  // TODO
   // Successfully created resource HTTP status code
   res.sendStatus(201);
 });
@@ -47,8 +33,7 @@ app.post('/add-subscription', async (req, res) => {
 app.delete('/remove-subscription', async (req, res) => {
   console.log(`Unsubscribing ${req.body.endpoint} from push notifications.`);
   // Remove subscription object from the database
-  db.data.subscriptions = db.data.subscriptions.filter(subscription => subscription.endpoint === req.body.endpoint);
-  await db.write();
+  // TODO
   // Successfully deleted resource HTTP status code
   res.sendStatus(200);
 });
