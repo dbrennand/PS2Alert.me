@@ -52,18 +52,18 @@ amqp.connect(`ampq://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
         channel.consume(queue, function (message) {
             console.log(`Recieved message: ${message.content}`)
             // Parse MetagameEvent JSON
-            var MetagameEventJson = JSON.parse(message.content);
+            var metagameEventJson = JSON.parse(message.content);
             // Get server name from ID
-            var serverName = getServerName(MetagameEventJson.world_id);
+            var serverName = getServerName(metagameEventJson.world_id);
             // Get world (continent) name from ID
-            var continentName = getContinentName(MetagameEventJson.zone_id);
+            var continentName = getContinentName(metagameEventJson.zone_id);
             // Create push notification object
             var pushNotification = {
                 title: `${serverName}: Alert started!`,
                 body: `On continent ${continentName}.`
             };
             // Get matching Notify documents from MongoDB
-            var matchingNotifyDocuments = getMatchingNotifyDocuments(MetagameEventJson.world_id);
+            var matchingNotifyDocuments = getMatchingNotifyDocuments(metagameEventJson.world_id);
             // Iterate over matching documents, sending a push notification using the subscription data
             matchingNotifyDocuments.forEach((notifyDocument) => {
                 // Send push notification
