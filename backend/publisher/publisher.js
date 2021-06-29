@@ -50,6 +50,12 @@ function sendtoQueue(metagameEvent) {
         }
         // Create a new channel
         connection.createChannel(function (error, channel) {
+            if (error) {
+                // Log error to console, close connection and return
+                console.error(`An error occurred creating a new channel to RabbitMQ: ${error}`);
+                connection.close();
+                return;
+            }
             // Declare name of queue
             var queue = 'MetagameEvent'
             // Create queue
