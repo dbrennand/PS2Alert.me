@@ -57,7 +57,7 @@ function sendtoQueue(metagameEvent) {
                 return;
             }
             // Declare name of queue
-            var queue = 'MetagameEvent'
+            var queue = 'MetagameEvent';
             // Create queue
             // Does nothing if the queue already exists
             channel.assertQueue(queue, {
