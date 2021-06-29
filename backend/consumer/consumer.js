@@ -3,13 +3,23 @@ import amqp from 'amqplib';
 import webpush from 'web-push';
 // Import custom functions and model
 import database from './config/database';
-import webpush from './config/webpush';
 import Notify from './models/notifyModel';
 
 // Connect to MongoDB
 database();
-// Setup web push credentials
-webpush();
+
+// Setup webpush vapid details
+const publicVapidKey = process.env.PUBLICVAPIDKEY;
+const privateVapidKey = process.env.PRIVATEVAPIDKEY;
+const contactEmail = process.env.CONTACTEMAIL;
+
+export default () => {
+    webpush.setVapidDetails(
+        contactEmail,
+        publicVapidKey,
+        privateVapidKey,
+    );
+};
 
 // Get RabbitMQ credentials
 const rabbitmqUsername = process.env.DBUSERNAME;
