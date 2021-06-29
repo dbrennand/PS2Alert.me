@@ -7,7 +7,6 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Import custom functions and model
 import database from './config/database';
-import webpush from './config/webpush';
 import Notify from './models/notifyModel';
 
 // Setup Express server
@@ -58,8 +57,6 @@ app.delete('/remove-subscription', async (req, res) => {
 
 // Connect to MongoDB
 database();
-// Setup web push credentials
-webpush();
 
 // Start the Express server
 app.listen(port, () => {
