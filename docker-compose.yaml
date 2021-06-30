@@ -1,0 +1,63 @@
+version: "3.9"
+services:
+  db:
+    image: mongo:4
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DBUSERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DBPASSWORD}
+    expose: 27017
+    restart: always
+  rabbitmq:
+    image: rabbitmq:3-alpine
+    container_name: rabbitmq
+    hostname: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQUSERNAME}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQPASSWORD}
+    expose: 5672
+    restart: unless-stopped
+  publisher:
+    build:
+      context: ./backend/publisher
+      dockerfile: Dockerfile
+    image: publisher:1
+    container_name: publisher
+    environment:
+      - RABBITMQUSERNAME=${RABBITMQUSERNAME}
+      - RABBITMQPASSWORD=${RABBITMQPASSWORD}
+      - SERVICEID=${SERVICEID}
+    depends_on:
+      - rabbitmq
+    restart: unless-stopped
+  consumer:
+    build:
+      context: ./backend
+      dockerfile: ./consumer/Dockerfile
+    image: consumer:1
+    container_name: consumer
+    environment:
+      - PUBLICVAPIDKEY=${PUBLICVAPIDKEY}
+      - PRIVATEVAPIDKEY=${PRIVATEVAPIDKEY}
+      - CONTACTEMAIL=${CONTACTEMAIL}
+      - RABBITMQUSERNAME=${RABBITMQUSERNAME}
+      - RABBITMQPASSWORD=${RABBITMQPASSWORD}
+    depends_on:
+      - rabbitmq
+      - db
+    restart: unless-stopped
+  ps2-alert-notify:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ps2-alert-notify:1
+    container_name: ps2-alert-notify
+    environment:
+      - PORT=${PORT}
+      - INTERFACE=${INTERFACE}
+      - DBUSERNAME=${DBUSERNAME}
+      - DBPASSWORD=${DBPASSWORD}
+    expose: ${PORT}
+    depends_on:
+      - db
+    restart: unless-stopped
