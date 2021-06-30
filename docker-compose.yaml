@@ -33,7 +33,7 @@ services:
   consumer:
     build:
       context: ./backend
-      dockerfile: ./consumer/Dockerfile
+      dockerfile: $PWD/backend/consumer/Dockerfile
     image: consumer:1
     container_name: consumer
     environment:
