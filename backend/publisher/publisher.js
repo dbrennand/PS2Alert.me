@@ -3,8 +3,8 @@ import amqp from 'amqplib';
 import { Client, Events } from "ps2census";
 
 // Get RabbitMQ credentials
-const rabbitmqUsername = process.env.DBUSERNAME;
-const rabbitmqPassword = process.env.DBPASSWORD;
+const rabbitmqUsername = process.env.RABBITMQUSERNAME;
+const rabbitmqPassword = process.env.RABBITMQPASSWORD;
 // Get ps2census service ID
 const serviceID = process.env.SERVICEID;
 

@@ -19,8 +19,8 @@ webpush.setVapidDetails(
 );
 
 // Get RabbitMQ credentials
-const rabbitmqUsername = process.env.DBUSERNAME;
-const rabbitmqPassword = process.env.DBPASSWORD;
+const rabbitmqUsername = process.env.RABBITMQUSERNAME;
+const rabbitmqPassword = process.env.RABBITMQPASSWORD;
 
 // Connect to RabbitMQ
 console.log('Connecting to RabbitMQ...')
