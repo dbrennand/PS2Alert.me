@@ -29,45 +29,45 @@ client.on('reconnecting', () => { console.log('Reconnecting...'); }); // Client 
 client.on('disconnected', () => { console.log('Disconnected.'); }); // Client got disconnected
 client.on('error', (error) => { console.log(error); }); // Error
 client.on('warn', (error) => { console.log(error); }); // Error, when receiving a corrupt message
-client.on(Events.PS2_META_EVENT, (event) => {
+client.on(Events.PS2_META_EVENT, async (event) => {
     // Check MetagameEvent is in a started state
     if (!(event.metagame_event_state_name === 'started')) {
         return;
     }
     // MetagameEvent is in a started state
     console.log(`MetagameEvent with ID: ${event.instance_id} is in a started state.`)
-    sendtoQueue(event);
+    await sendtoQueue(event);
 });
 
 // Function to send MetagameEvent to RabbitMQ queue
-function sendtoQueue(metagameEvent) {
+async function sendtoQueue(metagameEvent) {
     // Connect to RabbitMQ
-    amqp.connect(`ampq://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, function (error, connection) {
+    await amqp.connect(`ampq://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, async function (error, connection) {
         if (error) {
             // Log error to console and exit
             console.error(`An error occurred connecting to RabbitMQ: ${error}`);
             process.exit(1);
         }
         // Create a new channel
-        connection.createChannel(function (error, channel) {
+        await connection.createChannel(async function (error, channel) {
             if (error) {
                 // Log error to console, close connection and return
                 console.error(`An error occurred creating a new channel to RabbitMQ: ${error}`);
-                connection.close();
+                await connection.close();
                 return;
             }
             // Declare name of queue
             var queue = 'MetagameEvent';
             // Create queue
             // Does nothing if the queue already exists
-            channel.assertQueue(queue, {
+            await channel.assertQueue(queue, {
                 durable: true
             });
             // Send MetagameEvent to queue
-            channel.sendToQueue(queue, Buffer.from(JSON.stringify(metagameEvent)));
+            await channel.sendToQueue(queue, Buffer.from(JSON.stringify(metagameEvent)));
             console.log(`Sent MetagameEvent with ID: ${metagameEvent.instance_id} to queue.`);
-            channel.close();
+            await channel.close();
         });
-        connection.close();
+        await connection.close();
     });
 };
