@@ -25,6 +25,7 @@ const client = new Client(serviceID, {
 });
 
 // Define client behaviour
+client.on('ready', () => { console.log('Client ready and listening for MetagameEvents.'); }); // Client is ready
 client.on('reconnecting', () => { console.log('Reconnecting...'); }); // Client is reconnecting
 client.on('disconnected', () => { console.log('Disconnected.'); }); // Client got disconnected
 client.on('error', (error) => { console.log(error); }); // Error
@@ -72,3 +73,5 @@ async function sendtoQueue(metagameEvent) {
         await connection.close();
     });
 };
+
+client.watch();
