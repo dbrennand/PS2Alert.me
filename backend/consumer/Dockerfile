@@ -8,7 +8,7 @@ RUN npm install amqplib web-push mongoose
 
 # Copy consumer.js, config/database.js and models/notifyModel.js to working directory
 COPY consumer/consumer.js .
-COPY config/ .
-COPY models/ .
+COPY config/ ./config
+COPY models/ ./models
 
 CMD ["node", "consumer.js"]
