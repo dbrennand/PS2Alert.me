@@ -44,7 +44,7 @@ client.on(Events.PS2_META_EVENT, async (event) => {
 async function sendtoQueue(metagameEvent) {
     // Connect to RabbitMQ
     console.log('Connecting to RabbitMQ...')
-    await amqp.connect(`ampq://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, async function (error, connection) {
+    await amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, async function (error, connection) {
         if (error) {
             // Log error to console and exit
             console.error(`An error occurred connecting to RabbitMQ: ${error}`);

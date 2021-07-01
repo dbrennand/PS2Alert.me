@@ -24,7 +24,7 @@ const rabbitmqPassword = process.env.RABBITMQPASSWORD;
 
 // Connect to RabbitMQ
 console.log('Connecting to RabbitMQ...')
-amqp.connect(`ampq://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, async function (error, connection) {
+amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, async function (error, connection) {
     if (error) {
         // Log error to console and exit
         console.error(`An error occurred connecting to RabbitMQ: ${error}`);
