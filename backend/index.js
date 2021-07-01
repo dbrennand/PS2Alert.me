@@ -10,7 +10,7 @@ import database from './config/database';
 import Notify from './models/notifyModel';
 
 // Setup Express server
-const port = process.env.PORT;
+const port = 8080;
 const interface = process.env.INTERFACE;
 const app = express();
 app.use(express.json());

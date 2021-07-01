@@ -6,7 +6,8 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DBUSERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${DBPASSWORD}
-    expose: 27017
+    expose:
+      - 27017
     restart: always
   rabbitmq:
     image: rabbitmq:3-alpine
@@ -15,7 +16,8 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQUSERNAME}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQPASSWORD}
-    expose: 5672
+    expose:
+      - 5672
     restart: unless-stopped
   publisher:
     build:
@@ -53,11 +55,11 @@ services:
     image: ps2-alert-notify:1
     container_name: ps2-alert-notify
     environment:
-      - PORT=${PORT}
       - INTERFACE=${INTERFACE}
       - DBUSERNAME=${DBUSERNAME}
       - DBPASSWORD=${DBPASSWORD}
-    expose: ${PORT}
+    expose:
+      - 8080
     depends_on:
       - db
     restart: unless-stopped
