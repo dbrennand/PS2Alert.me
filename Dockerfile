@@ -11,4 +11,6 @@ RUN npm install
 COPY backend/ ./backend
 COPY frontend/ ./frontend
 
+EXPOSE 8080
+
 CMD ["node", "backend/index.js"]
