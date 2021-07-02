@@ -26,12 +26,12 @@ const setSubscribeMessage = async () => {
   try {
     const registration = await navigator.serviceWorker.getRegistration();
     const subscription = await registration.pushManager.getSubscription();
-    subscribedElement.setAttribute('class', `${subscription ? '' : 'd-none'}`);
-    unsubscribedElement.setAttribute('class', `${subscription ? 'd-none' : ''}`);
+    subscribedElement.setAttribute('class', `${subscription ? '' : 'd-none'} fs-5`);
+    unsubscribedElement.setAttribute('class', `${subscription ? 'd-none' : ''} fs-5`);
   } catch (e) {
     console.log("No registration found. Not subscribed.");
-    subscribedElement.setAttribute('class', 'd-none');
-    unsubscribedElement.setAttribute('class', '');
+    subscribedElement.setAttribute('class', 'd-none fs-5');
+    unsubscribedElement.setAttribute('class', 'fs-5');
   }
 };
 

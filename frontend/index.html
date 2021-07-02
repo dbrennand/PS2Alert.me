@@ -14,14 +14,14 @@
 <body class="bg-light">
     <!-- https://stackoverflow.com/questions/42252443/vertical-align-center-in-bootstrap -->
     <div class="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-        <h1 class="display-5 fw-bold">PS2 Alert Notify 🚨</h1>
-        <p class="text-center">Select the Planetside 2 server(s) (hold CTRL to select multiple) to subscribe to alert
+        <h1 class="display-4 fw-bold">PS2 Alert Notify 🚨</h1>
+        <p class="text-center fs-5">Select the Planetside 2 server(s) (hold CTRL to select multiple) to subscribe to alert
             notifications for and press the subscribe button. When prompted, allow notifications.</p>
         <form>
             <div class="mb-3">
-                <select id="server-select" class="form-select" multiple>
+                <select id="server-select" class="form-select fs-5" multiple>
                     <!-- https://ps2.fisu.pw/api/territory/
-                            World parameters
+                            World options
                             -->
                     <option value="1">Connery</option>
                     <option value="10">Miller</option>
@@ -32,8 +32,8 @@
             </div>
             <p id="subscribed">Subscribed to push notifications.</p>
             <p id="unsubscribed">Not subscribed to push notifications.</p>
-            <button type="button" class="btn btn-primary" onclick="subscribe()">Subscribe 🔔</button>
-            <button type="button" class="btn btn-warning" onclick="unsubscribe()">Unsubscribe 🔕</button>
+            <button type="button" class="btn btn-primary btn-lg" onclick="subscribe()">Subscribe 🔔</button>
+            <button type="button" class="btn btn-warning btn-lg" onclick="unsubscribe()">Unsubscribe 🔕</button>
         </form>
     </div>
     <script src="index.js"></script>
