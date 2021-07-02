@@ -51,14 +51,15 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
             console.log(`Recieved message: ${message.content}`);
             // Parse MetagameEvent JSON
             var metagameEventJson = JSON.parse(message.content);
-            console.log(`MetagameEvent JSON: ${metagameEventJson}`);
             // Get server (world) name and zone (continent) name from IDs
-            var serverContinentName = Promise.all([getServerName(metagameEventJson.world_id), getContinentName(metagameEventJson.zone_id)]);
+            var serverName = getServerName(metagameEventJson.world_id);
+            var continentName = getContinentName(metagameEventJson.zone_id);
             // Create push notification object
             var pushNotification = {
-                title: `${serverContinentName[0]}: Alert started!`,
-                body: `On continent ${serverContinentName[1]}.`
+                title: `${serverName}: Alert started!`,
+                body: `On continent ${continentName}.`
             };
+            console.log(pushNotification);
             // Get matching Notify documents from MongoDB
             Notify.find({ servers: metagameEventJson.world_id }, function (error, notifyDocuments) {
                 if (error) {
@@ -80,7 +81,7 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
     });
 });
 
-async function getServerName(serverID) {
+function getServerName(serverID) {
     // Server IDs and names: https://ps2.fisu.pw/api/territory/
     // Declare object containing server IDs and names
     const serverInfo = {
@@ -93,7 +94,7 @@ async function getServerName(serverID) {
     return serverInfo[serverID];
 };
 
-async function getContinentName(zoneID) {
+function getContinentName(zoneID) {
     // Zone (continent) IDs and names: https://ps2.fisu.pw/api/territory/
     // Declare object containing zone (continent) IDs and names
     const zoneInfo = {
