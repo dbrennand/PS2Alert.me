@@ -6,8 +6,11 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DBUSERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${DBPASSWORD}
+      - MONGO_INITDB_DATABASE=ps2-alert-notify
     expose:
       - 27017
+    volumes:
+      - ./backend/config/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
     restart: always
   rabbitmq:
     image: rabbitmq:3-alpine
@@ -44,6 +47,8 @@ services:
       - CONTACTEMAIL=${CONTACTEMAIL}
       - RABBITMQUSERNAME=${RABBITMQUSERNAME}
       - RABBITMQPASSWORD=${RABBITMQPASSWORD}
+      - DBUSERNAME=${DBUSERNAME}
+      - DBPASSWORD=${DBPASSWORD}
     depends_on:
       - rabbitmq
       - db
@@ -55,11 +60,10 @@ services:
     image: ps2-alert-notify:1
     container_name: ps2-alert-notify
     environment:
-      - INTERFACE=${INTERFACE}
       - DBUSERNAME=${DBUSERNAME}
       - DBPASSWORD=${DBPASSWORD}
-    expose:
-      - 8080
+    ports:
+      - 8080:8080
     depends_on:
       - db
     restart: unless-stopped
