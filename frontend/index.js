@@ -60,7 +60,7 @@ window.subscribe = async () => {
         console.log(`Server IDs selected: ${servers}`);
         // Create object containing subscription data and selected server(s)
         const data = {
-          server: servers,
+          servers: servers,
           subscription: subscription
         };
         // Send subscription information to the backend API
