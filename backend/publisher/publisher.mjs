@@ -17,6 +17,11 @@ const subscription = {
     logicalAndCharactersWithWorlds: true,
 };
 
+// Declare Planetside 2 zones (continents)
+// Zone (continent) IDs and names: https://ps2.fisu.pw/api/territory/
+// Indar, Hossin, Amerish, Esamir
+const zones = ['2', '4', '6', '8']
+
 // Initalise ps2census event stream client
 const client = new Client(serviceID, {
     streamManagerConfig: {
@@ -32,12 +37,13 @@ client.on('error', (error) => { console.log(error); }); // Error
 client.on('warn', (error) => { console.log(error); }); // Error, when receiving a corrupt message
 client.on(Events.PS2_META_EVENT, async (event) => {
     // Check MetagameEvent is in a started state
-    if (!(event.metagame_event_state_name === 'started')) {
+    if (event.metagame_event_state_name === 'started' && zones.includes(event.zone_id)) {
+        // MetagameEvent is in a started state as is for a recognised zone (continent)
+        console.log(`MetagameEvent with ID: ${event.instance_id} meets criteria. Sending to queue.`)
+        await sendtoQueue(event.raw);
+    } else {
         return;
-    }
-    // MetagameEvent is in a started state
-    console.log(`MetagameEvent with ID: ${event.instance_id} is in a started state.`)
-    await sendtoQueue(event.raw);
+    };
 });
 
 // Function to send MetagameEvent to RabbitMQ queue
