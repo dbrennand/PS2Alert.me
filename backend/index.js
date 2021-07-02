@@ -6,8 +6,8 @@ import helmet from 'helmet';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Import custom functions and model
-import database from './config/database.js';
-import Notify from './models/notifyModel.js';
+import database from './config/database.mjs';
+import Notify from './models/notifyModel.mjs';
 
 // Setup Express server
 const port = 8080;

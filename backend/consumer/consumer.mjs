@@ -2,8 +2,8 @@
 import amqp from 'amqplib';
 import webpush from 'web-push';
 // Import custom functions and model
-import database from './config/database';
-import Notify from './models/notifyModel';
+import database from './config/database.mjs';
+import Notify from './models/notifyModel.mjs';
 
 // Connect to MongoDB
 database();

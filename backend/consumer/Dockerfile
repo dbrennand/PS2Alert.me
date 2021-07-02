@@ -6,9 +6,9 @@ WORKDIR /usr/src/app
 # Install RabbitMQ consumer dependencies
 RUN npm install amqplib web-push mongoose
 
-# Copy consumer.js, config/database.js and models/notifyModel.js to working directory
-COPY consumer/consumer.js .
+# Copy consumer.mjs, config/database.mjs and models/notifyModel.mjs to working directory
+COPY consumer/consumer.mjs .
 COPY config/ ./config
 COPY models/ ./models
 
-CMD ["node", "consumer.js"]
+CMD ["node", "consumer.mjs"]
