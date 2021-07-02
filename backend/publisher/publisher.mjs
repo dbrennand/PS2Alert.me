@@ -45,7 +45,7 @@ async function sendtoQueue(metagameEvent) {
     // Connect to RabbitMQ
     try {
         console.log('Connecting to RabbitMQ...');
-        const connection = await amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`);
+        var connection = await amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`);
     } catch (error) {
         // Log error to console and exit
         console.error(`An error occurred connecting to RabbitMQ: ${error}`);
@@ -54,8 +54,8 @@ async function sendtoQueue(metagameEvent) {
     // Create a new channel
     try {
         console.log('Creating new channel.');
-        const channel = await connection.createChannel();
-    } catch {
+        var channel = await connection.createChannel();
+    } catch (error) {
         // Log error to console, close connection and return
         console.error(`An error occurred creating a new channel to RabbitMQ: ${error}`);
         await connection.close();
