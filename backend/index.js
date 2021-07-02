@@ -43,15 +43,20 @@ app.post('/add-subscription', async (req, res) => {
 app.delete('/remove-subscription', async (req, res) => {
   console.log(`Unsubscribing ${req.body.endpoint} from push notifications.`);
   // Remove Notify object containing the matching endpoint
-  try {
-    await Notify.remove({ endpoint: req.body.endpoint });
+  await Notify.where().findOneAndDelete({
+    "subscription.endpoint": { $eq: req.body.endpoint }
+  }, { rawResult: false }, async function (error, doc) {
+    if (error) {
+      // Log error and return HTTP error status code
+      console.error(`An error occurred removing Notify model with endpoint: ${req.body.endpoint} from MongoDB: ${error}`);
+      res.sendStatus(500);
+      return;
+    };
+    console.log(`Successfully removed Notify model with endpoint: ${req.body.endpoint} from MongoDB: ${doc}`)
     // Successfully deleted resource HTTP status code
     res.sendStatus(200);
-  } catch {
-    // Log error and return HTTP error status code
-    console.error(`An error occurred removing Notify model with endpoint: ${req.body.endpoint} from MongoDB: ${error}`);
-    res.sendStatus(500);
   }
+  );
 });
 
 // Connect to MongoDB
