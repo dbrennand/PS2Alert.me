@@ -53,11 +53,11 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
             var metagameEventJson = JSON.parse(message.content);
             // Get server (world) name and zone (continent) name from IDs
             var serverName = getServerName(metagameEventJson.world_id);
-            var continentName = getContinentName(metagameEventJson.zone_id);
+            var zoneName = getZoneName(metagameEventJson.zone_id);
             // Create push notification object
             var pushNotification = {
                 title: `${serverName}: Alert started!`,
-                body: `On continent ${continentName}.`
+                body: `On continent ${zoneName}.`
             };
             console.log(pushNotification);
             // Get matching Notify documents from MongoDB
@@ -95,7 +95,7 @@ function getServerName(serverID) {
     return serverInfo[serverID];
 };
 
-function getContinentName(zoneID) {
+function getZoneName(zoneID) {
     // Zone (continent) IDs and names: https://ps2.fisu.pw/api/territory/
     // Declare object containing zone (continent) IDs and names
     const zoneInfo = {
