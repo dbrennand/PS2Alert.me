@@ -6,12 +6,11 @@ import helmet from 'helmet';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Import custom functions and model
-import database from './config/database';
-import Notify from './models/notifyModel';
+import database from './config/database.js';
+import Notify from './models/notifyModel.js';
 
 // Setup Express server
 const port = 8080;
-const interface = process.env.INTERFACE;
 const app = express();
 app.use(express.json());
 app.use(
@@ -60,5 +59,5 @@ database();
 
 // Start the Express server
 app.listen(port, () => {
-  console.log(`PS2-Alert-Notify listening at http://${interface}:${port}`);
+  console.log(`PS2-Alert-Notify listening on port: ${port}`);
 });
