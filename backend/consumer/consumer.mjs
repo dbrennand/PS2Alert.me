@@ -74,6 +74,7 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
                     // Send push notification
                     webpush.sendNotification(notifyDocument.subscription, JSON.stringify(pushNotification));
                 });
+                console.log(`Push notification sent to ${notifyDocuments.length} subscribers for MetagameEvent with ID: ${metagameEventJson.instance_id}`);
             });
         }, {
             noAck: true
