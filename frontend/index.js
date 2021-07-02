@@ -42,42 +42,43 @@ window.subscribe = async () => {
   // Check if Service Workers are supported in the browser
   // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/ready#example
   if ('serviceWorker' in navigator) {
-    console.log('Browser supports Service Workers. Registering Service Worker.')
+    console.log('Browser supports Service Workers. Registering Service Worker.');
     // Register the Service Worker
-    await navigator.serviceWorker.register('/sw.js', { scope: '/' })
-      .then(async function (registration) {
-        console.log('Service Worker registered and active.');
-        // Subscribe to push notifications
-        console.log('Subscribing to push notifications.')
-        const subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-        });
-        // Get selected server(s) from select element
-        var selectElement = document.getElementById('server-select');
-        var servers = [...selectElement.selectedOptions]
-          .map(option => option.value);
-        console.log(`Server IDs selected: ${servers}`);
-        // Create object containing subscription data and selected server(s)
-        const data = {
-          servers: servers,
-          subscription: subscription
-        };
-        // Send subscription information to the backend API
-        await fetch('/add-subscription', {
-          method: 'POST',
-          body: JSON.stringify(data),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        setSubscribeMessage();
+    await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    console.log('Waiting for Service Worker to be ready...');
+    await navigator.serviceWorker.ready.then(async function (registration) {
+      console.log('Service Worker registered and active.');
+      // Subscribe to push notifications
+      console.log('Subscribing to push notifications.');
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
       });
+      // Get selected server(s) from select element
+      var selectElement = document.getElementById('server-select');
+      var servers = [...selectElement.selectedOptions]
+        .map(option => option.value);
+      console.log(`Server IDs selected: ${servers}`);
+      // Create object containing subscription data and selected server(s)
+      const data = {
+        servers: servers,
+        subscription: subscription
+      };
+      // Send subscription information to the backend API
+      await fetch('/add-subscription', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      setSubscribeMessage();
+    });
   } else {
     console.log('Browser does not support Service Workers.');
     return;
-  }
-}
+  };
+};
 
 // Logic for when a user presses the unsubscribe button
 // Unsubscribe from push notifications
