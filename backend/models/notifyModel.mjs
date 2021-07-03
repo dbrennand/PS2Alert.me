@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-// Define Schema for notify model
+// Define Schema for Notify model
 
 const notifySchema = new mongoose.Schema({
     servers: {
