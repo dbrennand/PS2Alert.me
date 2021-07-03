@@ -4,7 +4,9 @@ Browser notifications for Planetside 2 alerts.
 
 ![PS2Alert.me](images/PS2AlertMe.png)
 
-![Notification](images/notification.png)
+<p align="center">
+  <img src="images/notification.png"/>
+</p>
 
 ## Project Dependencies
 
