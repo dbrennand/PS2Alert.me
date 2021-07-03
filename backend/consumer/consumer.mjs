@@ -48,7 +48,7 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
         console.log(`Waiting for messages (MetagameEvents) from queue: ${queue}. To exit press CTRL+C`);
         // Callback for when RabbitMQ pushes messages to the consumer
         channel.consume(queue, function (message) {
-            console.log(`Recieved message: ${message.content}`);
+            console.log(`Received message: ${message.content}`);
             // Parse MetagameEvent JSON
             var metagameEventJson = JSON.parse(message.content);
             // Get server (world) name and zone (continent) name from IDs
