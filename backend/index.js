@@ -29,12 +29,20 @@ app.post('/add-subscription', async (req, res) => {
     // Create newNotify document from Notify model
     const newNotify = new Notify(req.body);
     // Save document to MongoDB
-    await newNotify.save();
-    // Successfully created resource HTTP status code
-    res.sendStatus(201);
+    await newNotify.save(async function (error, doc, _) {
+      if (error) {
+        // Log error and return HTTP error status code
+        console.error(`An error occurred saving Notify model to MongoDB: ${error}`);
+        res.sendStatus(500);
+        return;
+      }
+      console.log(`Successfully added Notify document to MongoDB: ${doc}`)
+      // Successfully created resource HTTP status code
+      res.sendStatus(201);
+    });
   } catch (error) {
     // Log error and return HTTP error status code
-    console.error(`An error occurred saving Notify model to MongoDB: ${error}`);
+    console.error(`An error occurred during the creation and saving of a Notify model to MongoDB: ${error}`);
     res.sendStatus(500);
   }
 });
