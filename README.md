@@ -1,8 +1,8 @@
-# ps2-alert-notify 🚨
+# 🚨 PS2Alert.me
 
 Browser notifications for Planetside 2 alerts.
 
-![ps2-alert-notify](images/ps2-alert-notify.png)
+![PS2Alert.me](images/PS2AlertMe.png)
 
 ## Project Dependencies
 
@@ -20,13 +20,13 @@ Browser notifications for Planetside 2 alerts.
 
 ## Introduction
 
-ps2-alert-notify allows a user to receive push notifications for Planetside 2 alerts in their browser. The application achieves this by leveraging [Service Workers](https://developers.google.com/web/fundamentals/primers/service-workers) and the [Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API).
+PS2Alert.me allows a user to receive push notifications for Planetside 2 alerts in their browser. The application achieves this by leveraging [Service Workers](https://developers.google.com/web/fundamentals/primers/service-workers) and the [Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API).
 
 ### Components
 
 The project has several components:
 
-1. Web application (frontend - ps2-alert-notify):
+1. Web application (frontend - PS2Alert.me):
 
     - Users select the Planetside 2 server(s) to subscribe to alert notifications for and a Service Worker is registered to receive push notifications.
 
@@ -42,7 +42,7 @@ The project has several components:
 
 4. Publisher (Backend):
 
-    - Connects to the Planetside 2 WebSocket Event Stream and listens for *MetagameEvents*. When a *MetagameEvent* matching the [criteria](https://github.com/dbrennand/ps2-alert-notify/blob/master/backend/publisher/publisher.mjs#L40) occurs, the publisher connects to RabbitMQ and sends the *MetagameEvent* to the queue.
+    - Connects to the Planetside 2 WebSocket Event Stream and listens for *MetagameEvents*. When a *MetagameEvent* matching the [criteria](https://github.com/dbrennand/PS2Alert.me/blob/master/backend/publisher/publisher.mjs#L40) occurs, the publisher connects to RabbitMQ and sends the *MetagameEvent* to the queue.
 
 5. Consumer (Backend):
 
@@ -68,9 +68,9 @@ The project stack can be deployed locally using [Docker](https://www.docker.com/
 
 ## Deployment
 
-Use the following steps to deploy the ps2-alert-notify stack locally using Docker:
+Use the following steps to deploy the PS2Alert.me stack locally using Docker:
 
-1. Clone the repository: `git clone https://github.com/dbrennand/ps2-alert-notify.git && cd ps2-alert-notify`
+1. Clone the repository: `git clone https://github.com/dbrennand/PS2Alert.me.git && cd PS2Alert.me`
 
 2. Bring up the project stack: `docker-compose up -d --build`
 

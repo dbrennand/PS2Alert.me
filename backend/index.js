@@ -72,5 +72,5 @@ database();
 
 // Start the Express server
 app.listen(port, () => {
-  console.log(`PS2-Alert-Notify listening on port: ${port}`);
+  console.log(`PS2Alert.me listening on port: ${port}`);
 });

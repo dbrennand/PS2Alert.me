@@ -1,7 +1,7 @@
-# Files to ignore when building ps2-alert-notify container image
+# Files to ignore when building PS2Alert.me container image
 .git
 .env
 **/node_modules
-# Ignore consumer and publisher dirs and files from ps2-alert-notify container build
+# Ignore consumer and publisher dirs and files from PS2Alert.me container build
 */consumer*
 */publisher*

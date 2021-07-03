@@ -3,11 +3,11 @@ FROM node:16-alpine
 # Set working directory
 WORKDIR /usr/src/app
 
-# Copy and install ps2-alert-notify dependencies
+# Copy and install PS2Alert.me dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy ps2-alert-notify source code
+# Copy PS2Alert.me source code
 COPY backend/ ./backend
 COPY frontend/ ./frontend
 

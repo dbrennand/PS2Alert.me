@@ -7,7 +7,7 @@ const dbPassword = process.env.DBPASSWORD;
 export default async () => {
     // Connect to the database
     try {
-        await mongoose.connect(`mongodb://${dbUsername}:${dbPassword}@db:27017/ps2-alert-notify`, {
+        await mongoose.connect(`mongodb://${dbUsername}:${dbPassword}@db:27017/PS2AlertMe`, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         });

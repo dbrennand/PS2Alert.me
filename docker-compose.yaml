@@ -6,7 +6,7 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DBUSERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${DBPASSWORD}
-      - MONGO_INITDB_DATABASE=ps2-alert-notify
+      - MONGO_INITDB_DATABASE=PS2AlertMe
     expose:
       - 27017
     volumes:
@@ -53,12 +53,12 @@ services:
       - rabbitmq
       - db
     restart: unless-stopped
-  ps2-alert-notify:
+  PS2AlertMe:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ps2-alert-notify:1
-    container_name: ps2-alert-notify
+    image: ps2alertme:1
+    container_name: PS2AlertMe
     environment:
       - DBUSERNAME=${DBUSERNAME}
       - DBPASSWORD=${DBPASSWORD}

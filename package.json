@@ -1,5 +1,5 @@
 {
-  "name": "ps2-alert-notify",
+  "name": "ps2alert.me",
   "version": "1.0.0",
   "type": "module",
   "description": "Browser notifications for Planetside 2 alerts.",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dbrennand/ps2-alert-notify.git"
+    "url": "git+https://github.com/dbrennand/PS2Alert.me.git"
   },
   "keywords": [],
   "author": "dbrennand",
   "license": "GPL-3.0-only",
   "bugs": {
-    "url": "https://github.com/dbrennand/ps2-alert-notify/issues"
+    "url": "https://github.com/dbrennand/PS2Alert.me/issues"
   },
-  "homepage": "https://github.com/dbrennand/ps2-alert-notify",
+  "homepage": "https://github.com/dbrennand/PS2Alert.me",
   "dependencies": {
     "express": "^4.17.1",
     "helmet": "^4.6.0",
