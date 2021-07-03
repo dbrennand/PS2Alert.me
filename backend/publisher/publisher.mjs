@@ -82,7 +82,7 @@ async function sendtoQueue(metagameEvent) {
         console.log(`Successfully sent MetagameEvent with ID: ${metagameEvent.instance_id} to queue.`);
     } catch (error) {
         // Log error to console and return
-        console.error(`An error occurred sending MetagameEvent with ID: ${metagameEvent.instance_id} to queue. ${error}`);
+        console.error(`An error occurred sending MetagameEvent with ID: ${metagameEvent.instance_id} to queue: ${error}`);
     } finally {
         // Close connection
         await channel.close();
