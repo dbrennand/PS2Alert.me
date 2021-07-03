@@ -7,8 +7,11 @@ WORKDIR /usr/src/app
 RUN npm install amqplib web-push mongoose
 
 # Copy consumer.mjs, config/database.mjs and models/notifyModel.mjs to working directory
-COPY consumer/consumer.mjs .
-COPY config/ ./config
-COPY models/ ./models
+COPY --chown=node:node consumer/consumer.mjs .
+COPY --chown=node:node config/ ./config
+COPY --chown=node:node models/ ./models
+
+# Set Node user
+USER node
 
 CMD ["node", "consumer.mjs"]

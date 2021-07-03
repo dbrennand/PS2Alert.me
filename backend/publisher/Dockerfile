@@ -7,6 +7,9 @@ WORKDIR /usr/src/app
 RUN npm install amqplib ps2census bufferutil utf-8-validate
 
 # Copy publisher.js to working directory
-COPY publisher.mjs .
+COPY --chown=node:node publisher.mjs .
+
+# Set Node user
+USER node
 
 CMD ["node", "publisher.mjs"]
