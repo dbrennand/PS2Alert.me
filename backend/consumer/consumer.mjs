@@ -31,6 +31,7 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
         process.exit(1);
     };
     // Create a new channel
+    console.log('Creating a new channel.');
     connection.createChannel(function (error, channel) {
         if (error) {
             // Log error to console, close connection and exit
