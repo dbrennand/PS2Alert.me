@@ -24,7 +24,7 @@ Browser notifications for Planetside 2 alerts.
 
 ## Introduction
 
-PS2Alert.me allows a user to receive push notifications for Planetside 2 alerts in their browser. The application achieves this by leveraging [Service Workers](https://developers.google.com/web/fundamentals/primers/service-workers) and the [Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API).
+PS2Alert.me allows a user to receive push notifications for Planetside 2 alerts in their browser. The application achieves this by leveraging [Service Workers](https://developers.google.com/web/fundamentals/primers/service-workers), the [Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API), [Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API) and [Push Services](https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications#push_notification_terms).
 
 ### Components
 
@@ -46,7 +46,7 @@ The project has several components:
 
 4. Publisher (Backend):
 
-    - Connects to the Planetside 2 WebSocket Event Stream and listens for *MetagameEvents*. When a *MetagameEvent* matching the [criteria](https://github.com/dbrennand/PS2Alert.me/blob/master/backend/publisher/publisher.mjs#L40) occurs, the publisher connects to RabbitMQ and sends the *MetagameEvent* to the queue.
+    - Connects to the Planetside 2 WebSocket Event Stream and listens for *MetagameEvents*. When a *MetagameEvent* matching the [criteria](https://github.com/dbrennand/PS2Alert.me/blob/master/backend/publisher/publisher.mjs#L40) occurs, the publisher sends the *MetagameEvent* to the queue.
 
 5. Consumer (Backend):
 
