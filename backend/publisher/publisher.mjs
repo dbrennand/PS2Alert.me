@@ -5,6 +5,15 @@ import { Client, Events } from "ps2census";
 // Get RabbitMQ credentials
 const rabbitmqUsername = process.env.RABBITMQUSERNAME;
 const rabbitmqPassword = process.env.RABBITMQPASSWORD;
+
+// Connect to RabbitMQ
+console.log('Connecting to RabbitMQ...');
+const connection = await amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`);
+
+// Create a new channel
+console.log('Creating a new channel.');
+const channel = await connection.createChannel();
+
 // Get ps2census service ID
 const serviceID = process.env.SERVICEID;
 
@@ -40,34 +49,15 @@ client.on(Events.PS2_META_EVENT, async (event) => {
     if (event.metagame_event_state_name === 'started' && zones.includes(event.zone_id)) {
         // MetagameEvent is in a started state as is for a recognised zone (continent)
         console.log(`MetagameEvent with ID: ${event.instance_id} meets criteria. Sending to queue.`)
-        await sendtoQueue(event.raw);
+        await sendtoQueue(channel, event.raw);
     } else {
         return;
     };
 });
 
-// Function to send MetagameEvent to RabbitMQ queue
-async function sendtoQueue(metagameEvent) {
-    // Connect to RabbitMQ
-    try {
-        console.log('Connecting to RabbitMQ...');
-        var connection = await amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`);
-    } catch (error) {
-        // Log error to console and exit
-        console.error(`An error occurred connecting to RabbitMQ: ${error}`);
-        process.exit(1);
-    };
-    // Create a new channel
-    try {
-        console.log('Creating new channel.');
-        var channel = await connection.createChannel();
-    } catch (error) {
-        // Log error to console, close connection and return
-        console.error(`An error occurred creating a new channel to RabbitMQ: ${error}`);
-        await connection.close();
-        return;
-    };
-    // Declare name of queue
+// Function to send MetagameEvent to the RabbitMQ queue
+async function sendtoQueue(channel, metagameEvent) {
+    // Declare name of the queue
     var queue = 'MetagameEvent';
     // Create queue
     // Does nothing if the queue already exists
@@ -77,16 +67,12 @@ async function sendtoQueue(metagameEvent) {
     });
     // Send MetagameEvent to queue
     try {
-        console.log(`Sending MetagameEvent with ID: ${metagameEvent.instance_id} to queue.`);
+        console.log(`Sending MetagameEvent with ID: ${metagameEvent.instance_id} to the queue.`);
         await channel.sendToQueue(queue, Buffer.from(JSON.stringify(metagameEvent)));
-        console.log(`Successfully sent MetagameEvent with ID: ${metagameEvent.instance_id} to queue.`);
+        console.log(`Successfully sent MetagameEvent with ID: ${metagameEvent.instance_id} to the queue.`);
     } catch (error) {
         // Log error to console and return
-        console.error(`An error occurred sending MetagameEvent with ID: ${metagameEvent.instance_id} to queue: ${error}`);
-    } finally {
-        // Close connection
-        await channel.close();
-        await connection.close();
+        console.error(`An error occurred sending MetagameEvent with ID: ${metagameEvent.instance_id} to the queue: ${error}`);
     };
 };
 
