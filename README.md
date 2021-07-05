@@ -14,6 +14,8 @@ Browser notifications for Planetside 2 alerts.
 
 * [Helmet](https://www.npmjs.com/package/helmet)
 
+* [mongo-sanitize](https://github.com/vkarpov15/mongo-sanitize)
+
 * [web-push](https://www.npmjs.com/package/web-push)
 
 * [Mongoose](https://mongoosejs.com/)
