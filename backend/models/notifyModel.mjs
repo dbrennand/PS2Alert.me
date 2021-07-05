@@ -14,8 +14,8 @@ const notifySchema = new mongoose.Schema({
         // Firefox doesn't provide this but some browsers (such as Edge) do
         expirationTime: { type: Number, required: false },
         keys: {
-            auth: String,
-            p256dh: String
+            auth: { type: String, required: true },
+            p256dh: { type: String, required: true }
         }
     }
 });
