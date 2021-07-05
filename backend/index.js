@@ -30,7 +30,7 @@ app.post('/add-subscription', async (req, res) => {
     // Create newNotify document from Notify model
     const newNotify = new Notify(req.body);
     // Save document to MongoDB
-    await newNotify.save(async function (error, doc, _) {
+    await newNotify.save({ validateBeforeSave: true, checkKeys: true }, async function (error, doc, _) {
       if (error) {
         // Log error and return HTTP error status code
         console.error(`An error occurred saving Notify model to MongoDB: ${error}`);
