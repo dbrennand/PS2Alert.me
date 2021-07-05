@@ -21,6 +21,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "helmet": "^4.6.0",
+    "mongo-sanitize": "github:vkarpov15/mongo-sanitize#master",
     "mongoose": "^5.13.0"
   }
 }
