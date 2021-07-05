@@ -2,6 +2,7 @@
 import path from 'path';
 import express from 'express';
 import helmet from 'helmet';
+import sanitize from 'mongo-sanitize';
 // Fix for __dirname: https://github.com/nodejs/help/issues/2907#issuecomment-757446568
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -49,18 +50,20 @@ app.post('/add-subscription', async (req, res) => {
 
 // /remove-subscription API endpoint
 app.delete('/remove-subscription', async (req, res) => {
-  console.log(`Unsubscribing ${req.body.endpoint} from push notifications.`);
+  // Sanitise req.body.endpoint to mitigate against query selector injection attacks
+  var cleanEndpoint = sanitize(req.body.endpoint);
+  console.log(`Unsubscribing ${cleanEndpoint} from push notifications.`);
   // Remove Notify object containing the matching endpoint
   await Notify.where().findOneAndDelete({
-    "subscription.endpoint": { $eq: req.body.endpoint }
+    "subscription.endpoint": { $eq: cleanEndpoint }
   }, { rawResult: false }, async function (error, doc) {
     if (error) {
       // Log error and return HTTP error status code
-      console.error(`An error occurred removing Notify model with endpoint: ${req.body.endpoint} from MongoDB: ${error}`);
+      console.error(`An error occurred removing Notify model with endpoint: ${cleanEndpoint} from MongoDB: ${error}`);
       res.sendStatus(500);
       return;
     };
-    console.log(`Successfully removed Notify model with endpoint: ${req.body.endpoint} from MongoDB: ${doc}`)
+    console.log(`Successfully removed Notify model with endpoint: ${cleanEndpoint} from MongoDB: ${doc}`)
     // Successfully deleted resource HTTP status code
     res.sendStatus(200);
   }
