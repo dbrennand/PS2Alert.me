@@ -48,18 +48,23 @@ window.subscribe = async () => {
     console.log('Waiting for Service Worker to be ready...');
     await navigator.serviceWorker.ready.then(async function (registration) {
       console.log('Service Worker registered and active.');
+      // Get selected server(s) from select element
+      var selectElement = document.getElementById('server-select');
+      var servers = [...selectElement.selectedOptions]
+        .map(option => option.value);
+      // Check servers is populated with at least one ID
+      if (!(servers.length)) {
+        console.error('Select at least one server to subscribe to push notifications.');
+        return;
+      }
+      console.log(`Server IDs selected: ${servers}`);
       // Subscribe to push notifications
       console.log('Subscribing to push notifications.');
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
       });
-      // Get selected server(s) from select element
-      var selectElement = document.getElementById('server-select');
-      var servers = [...selectElement.selectedOptions]
-        .map(option => option.value);
-      console.log(`Server IDs selected: ${servers}`);
-      // Create object containing subscription data and selected server(s)
+      // Create object containing selected server(s) and subscription data
       const data = {
         servers: servers,
         subscription: subscription
