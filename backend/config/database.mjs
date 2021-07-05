@@ -9,7 +9,8 @@ export default async () => {
     try {
         await mongoose.connect(`mongodb://${dbUsername}:${dbPassword}@db:27017/PS2AlertMe`, {
             useNewUrlParser: true,
-            useUnifiedTopology: true
+            useUnifiedTopology: true,
+            useCreateIndex: true
         });
         console.log('Connected to MongoDB.')
     } catch (error) {
