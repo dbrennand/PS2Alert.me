@@ -23,12 +23,20 @@ app.use(
 // Serve all files in frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
 
+// Function to sanitise input to mitigate against query selector injection attacks in NoSQL
+async function sanitiseInput(input) {
+  var cleanInput = sanitize(input);
+  return cleanInput;
+}
+
 // /add-subscription API endpoint
 app.post('/add-subscription', async (req, res) => {
   console.log(`Subscribing ${req.body.subscription.endpoint} for push notifications.`);
   try {
+    // Sanitise req.body
+    const cleanBody = await sanitiseInput(req.body);
     // Create newNotify document from Notify model
-    const newNotify = new Notify(req.body);
+    const newNotify = new Notify(cleanBody);
     // Save document to MongoDB
     await newNotify.save({ validateBeforeSave: true, checkKeys: true }, async function (error, doc, _) {
       if (error) {
@@ -50,9 +58,9 @@ app.post('/add-subscription', async (req, res) => {
 
 // /remove-subscription API endpoint
 app.delete('/remove-subscription', async (req, res) => {
+  console.log(`Unsubscribing ${req.body.endpoint} from push notifications.`);
   // Sanitise req.body.endpoint to mitigate against query selector injection attacks
-  var cleanEndpoint = sanitize(req.body.endpoint);
-  console.log(`Unsubscribing ${cleanEndpoint} from push notifications.`);
+  const cleanEndpoint = await sanitiseInput(req.body.endpoint);
   // Remove Notify object containing the matching endpoint
   await Notify.where().findOneAndDelete({
     "subscription.endpoint": { $eq: cleanEndpoint }
