@@ -67,11 +67,11 @@ app.delete('/remove-subscription', async (req, res) => {
   }, { rawResult: false }, async function (error, doc) {
     if (error) {
       // Log error and return HTTP error status code
-      console.error(`An error occurred removing Notify model with endpoint: ${cleanEndpoint} from MongoDB: ${error}`);
+      console.error(`An error occurred removing Notify document with endpoint: ${cleanEndpoint} from MongoDB: ${error}`);
       res.sendStatus(500);
       return;
     };
-    console.log(`Successfully removed Notify model with endpoint: ${cleanEndpoint} from MongoDB: ${doc}`)
+    console.log(`Successfully removed Notify document with endpoint: ${cleanEndpoint} from MongoDB: ${doc}`)
     // Successfully deleted resource HTTP status code
     res.sendStatus(200);
   }
