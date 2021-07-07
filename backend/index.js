@@ -41,7 +41,7 @@ app.post('/add-subscription', async (req, res) => {
     await newNotify.save({ validateBeforeSave: true, checkKeys: true }, async function (error, doc, _) {
       if (error) {
         // Log error and return HTTP error status code
-        console.error(`An error occurred saving Notify model to MongoDB: ${error}`);
+        console.error(`An error occurred saving Notify document to MongoDB: ${error}`);
         res.sendStatus(500);
         return;
       }
@@ -51,7 +51,7 @@ app.post('/add-subscription', async (req, res) => {
     });
   } catch (error) {
     // Log error and return HTTP error status code
-    console.error(`An error occurred during the creation and saving of a Notify model to MongoDB: ${error}`);
+    console.error(`An error occurred during the creation and saving of a Notify document to MongoDB: ${error}`);
     res.sendStatus(500);
   }
 });
