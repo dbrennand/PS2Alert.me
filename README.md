@@ -78,7 +78,7 @@ Use the following steps to deploy the PS2Alert.me stack locally using Docker:
 
 1. Clone the repository: `git clone https://github.com/dbrennand/PS2Alert.me.git && cd PS2Alert.me`
 
-2. Bring up the project stack: `docker-compose up -f docker-compose-dev.yaml -d --build`
+2. Bring up the project stack: `docker-compose -f docker-compose-dev.yaml up -d --build`
 
 The frontend will then be available at: http://localhost:8080
 
