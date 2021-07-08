@@ -1,0 +1,6 @@
+# PS2Alert.me production Caddyfile
+# Handles serving PS2Alert.me over HTTPS with automatic cert renewal
+# Also, automatically redirects all HTTP traffic to HTTPS
+{$SITE_ADDRESS} {
+    reverse_proxy PS2AlertMe:8080
+}

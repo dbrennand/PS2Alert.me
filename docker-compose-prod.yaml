@@ -1,0 +1,109 @@
+version: "3.9"
+services:
+  db:
+    image: mongo:4
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DBUSERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DBPASSWORD}
+      - MONGO_INITDB_DATABASE=PS2AlertMe
+    networks:
+      - backend
+    expose:
+      - 27017
+    volumes:
+      - db-data:/data/db
+      - ./backend/config/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+    restart: always
+  rabbitmq:
+    image: rabbitmq:3-alpine
+    container_name: rabbitmq
+    hostname: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQUSERNAME}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQPASSWORD}
+    networks:
+      - backend
+    expose:
+      - 5672
+    restart: unless-stopped
+  publisher:
+    build:
+      context: ./backend/publisher
+      dockerfile: Dockerfile
+    image: publisher:1
+    container_name: publisher
+    environment:
+      - RABBITMQUSERNAME=${RABBITMQUSERNAME}
+      - RABBITMQPASSWORD=${RABBITMQPASSWORD}
+      - SERVICEID=${SERVICEID}
+    networks:
+      - backend
+    depends_on:
+      - rabbitmq
+    restart: unless-stopped
+  consumer:
+    build:
+      context: ./backend
+      dockerfile: $PWD/backend/consumer/Dockerfile
+    image: consumer:1
+    container_name: consumer
+    environment:
+      - PUBLICVAPIDKEY=${PUBLICVAPIDKEY}
+      - PRIVATEVAPIDKEY=${PRIVATEVAPIDKEY}
+      - CONTACTEMAIL=${CONTACTEMAIL}
+      - RABBITMQUSERNAME=${RABBITMQUSERNAME}
+      - RABBITMQPASSWORD=${RABBITMQPASSWORD}
+      - DBUSERNAME=${DBUSERNAME}
+      - DBPASSWORD=${DBPASSWORD}
+    networks:
+      - backend
+    depends_on:
+      - rabbitmq
+      - db
+    restart: unless-stopped
+  PS2AlertMe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ps2alertme:1
+    container_name: PS2AlertMe
+    environment:
+      - DBUSERNAME=${DBUSERNAME}
+      - DBPASSWORD=${DBPASSWORD}
+    networks:
+      - backend
+    expose:
+      - 8080
+    depends_on:
+      - db
+    restart: unless-stopped
+  caddy:
+    image: caddy:2.4.3-alpine
+    container_name: caddy
+    environment:
+      - SITE_ADDRESS=${SITE_ADDRESS}
+    networks:
+      - frontend
+      - backend
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - caddy-data:/data
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - db
+      - rabbitmq
+      - publisher
+      - consumer
+      - PS2AlertMe
+    restart: always
+
+networks:
+  backend:
+  frontend:
+
+volumes:
+  db-data:
+  caddy-data:
