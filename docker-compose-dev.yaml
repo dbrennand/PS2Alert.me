@@ -63,6 +63,8 @@ services:
     environment:
       - DBUSERNAME=${DBUSERNAME}
       - DBPASSWORD=${DBPASSWORD}
+      - COOKIE_SECRET=${COOKIE_SECRET}
+      - NODE_ENV=development
     ports:
       - 8080:8080
     depends_on:
