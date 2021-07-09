@@ -129,5 +129,9 @@ const unsubscribeToPushNotifications = async () => {
 document.getElementById('subscribebutton').addEventListener('click', subscribeToPushNotifications);
 document.getElementById('unsubscribebutton').addEventListener('click', unsubscribeToPushNotifications);
 
+// Show Bootstrap modal for cookie
+const cookieModalEl = document.getElementById('cookiemodal');
+new bootstrap.Modal(cookieModalEl).show();
+
 // Set subscribe message when loading the page
 setSubscribeMessage();
