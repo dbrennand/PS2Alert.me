@@ -1,36 +1,81 @@
 // Import required libraries
-import path from 'path';
-import express from 'express';
-import helmet from 'helmet';
 import sanitize from 'mongo-sanitize';
+import express from 'express';
+import csurf from 'csurf';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 // Fix for __dirname: https://github.com/nodejs/help/issues/2907#issuecomment-757446568
+import path from 'path';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Import custom functions and model
 import database from './config/database.mjs';
 import Notify from './models/notifyModel.mjs';
 
-// Setup Express server
-const port = 8080;
-const app = express();
-app.use(express.json());
-app.use(
-  helmet({
-    contentSecurityPolicy: false,
-  })
-);
-
-// Serve all files in frontend
-app.use(express.static(path.join(__dirname, '../frontend')));
-
 // Function to sanitise input to mitigate against query selector injection attacks in NoSQL
 async function sanitiseInput(input) {
   var cleanInput = sanitize(input);
   return cleanInput;
-}
+};
 
-// /add-subscription API endpoint
-app.post('/add-subscription', async (req, res) => {
+// Setup route middleware for CSRF
+const csrfProtection = csurf({
+  cookie: true
+})
+
+// Setup Express server
+const port = 8080;
+const app = express();
+// Parse JSON
+app.use(express.json());
+// Parse cookies and configure cookie parser
+app.use(cookieParser(process.env.COOKIE_SECRET, {
+  // https://www.npmjs.com/package/cookie#options-1
+  // One day in seconds
+  maxAge: 24 * 60 * 60,
+  // This cookie cannot be accessed in the client's Javascript
+  httpOnly: true,
+  // Declare if cookies should be restricted to a first-party or same-site context
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
+  // true when production, otherwise false
+  sameSite: process.env.NODE_ENV === 'production' ? true : false,
+  // Set cookie as secure when production
+  // Can only be sent over a HTTPS connection
+  secure: process.env.NODE_ENV === 'production' ? true : false
+}));
+// Use Helmet to set useful security defaults
+//app.use((req, res, next) => {
+//  res.locals.cspNonce = crypto.randomBytes(16).toString("hex");
+//  next();
+//});
+// Use defaults for Content Security Policy (CSP) apart from specific directives
+app.use(
+  helmet.contentSecurityPolicy({
+    useDefaults: true,
+    directives: {
+      'default-src': ["'self'"],
+      'script-src': ["'self'", 'https://ps2alert.me'],
+      'style-src': ["'self'", "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css", "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"],
+      'upgrade-insecure-requests': []
+    },
+  })
+);
+
+// Set views directory
+app.set('views', path.join(__dirname, '../frontend/views'));
+// Set template engine as pug
+app.set('view engine', 'pug');
+// Serve Javascript assets at /
+app.use('/', express.static(path.join(__dirname, '../frontend')));
+
+// PS2Alert.me / route
+app.get('/', csrfProtection, async (req, res) => {
+  // Provide the CSRF token to the index view
+  res.render('index', { csrfToken: req.csrfToken() });
+});
+
+// /add-subscription API route
+app.post('/add-subscription', csrfProtection, async (req, res) => {
   console.log(`Subscribing ${req.body.subscription.endpoint} for push notifications.`);
   try {
     // Sanitise req.body
@@ -56,8 +101,8 @@ app.post('/add-subscription', async (req, res) => {
   }
 });
 
-// /remove-subscription API endpoint
-app.delete('/remove-subscription', async (req, res) => {
+// /remove-subscription API route
+app.delete('/remove-subscription', csrfProtection, async (req, res) => {
   console.log(`Unsubscribing ${req.body.endpoint} from push notifications.`);
   // Sanitise req.body.endpoint to mitigate against query selector injection attacks
   const cleanEndpoint = await sanitiseInput(req.body.endpoint);

@@ -17,6 +17,12 @@ const urlBase64ToUint8Array = (base64String) => {
   return outputArray;
 };
 
+// Function to get Cross-Site Request Forgery (CSRF) token
+const getCsrfToken = () => {
+  console.log('Getting CSRF token.');
+  return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+};
+
 // Code snippet adapted from: https://github.com/fgerschau/web-push-notification-example/blob/master/client/index.js
 // Function to set subscribe message based on whether the user is subscribed to push notifications or not
 const setSubscribeMessage = async () => {
@@ -35,10 +41,11 @@ const setSubscribeMessage = async () => {
   }
 };
 
+
 // Code inspiration from: https://felixgerschau.com/web-push-notifications-tutorial/
 // Logic for when a user presses the subscribe button
 // Subscribe to push notifications
-window.subscribe = async () => {
+const subscribeToPushNotifications = async () => {
   // Check if Service Workers are supported in the browser
   // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/ready#example
   if ('serviceWorker' in navigator) {
@@ -49,9 +56,9 @@ window.subscribe = async () => {
     await navigator.serviceWorker.ready.then(async function (registration) {
       console.log('Service Worker registered and active.');
       // Get selected server(s) from select element
-      var selectElement = document.getElementById('server-select');
-      var servers = [...selectElement.selectedOptions]
-        .map(option => option.value);
+      const selectElement = document.getElementById('server-select');
+      const servers = [...selectElement.selectedOptions]
+      .map(option => option.value);
       // Check servers is populated with at least one ID
       if (!(servers.length)) {
         console.error('Select at least one server to subscribe to push notifications.');
@@ -71,10 +78,12 @@ window.subscribe = async () => {
       };
       // Send subscription information to the backend API
       await fetch('/add-subscription', {
+        credentials: 'same-origin',
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'CSRF-Token': getCsrfToken()
         }
       });
       setSubscribeMessage();
@@ -87,31 +96,38 @@ window.subscribe = async () => {
 
 // Logic for when a user presses the unsubscribe button
 // Unsubscribe from push notifications
-window.unsubscribe = async () => {
+const unsubscribeToPushNotifications = async () => {
   console.log('Getting registration to unsubscribe from push notifications.');
   // Get registration
   await navigator.serviceWorker.getRegistration()
-    .then(async function (registration) {
-      // Get current subscription
-      console.log('Getting subscription to unsubscribe from push notifications.');
-      const subscription = await registration.pushManager.getSubscription();
-      // Send backend API request to unsubscribe from push notifications
-      console.log('Removing subscription.')
-      await fetch('/remove-subscription', {
-        method: 'DELETE',
-        body: JSON.stringify({ endpoint: subscription.endpoint }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      console.log('Unsubscribing from push notifications.')
-      await subscription.unsubscribe();
-      // Finally, remove Service Worker
-      console.log('Removing Service Worker.')
-      await registration.unregister();
-      console.log('Successfully unsubscribed from push notifications.');
-      setSubscribeMessage();
+  .then(async function (registration) {
+    // Get current subscription
+    console.log('Getting subscription to unsubscribe from push notifications.');
+    const subscription = await registration.pushManager.getSubscription();
+    // Send backend API request to unsubscribe from push notifications
+    console.log('Removing subscription.')
+    await fetch('/remove-subscription', {
+      credentials: 'same-origin',
+      method: 'DELETE',
+      body: JSON.stringify({ endpoint: subscription.endpoint }),
+      headers: {
+        'Content-Type': 'application/json',
+        'CSRF-Token': getCsrfToken()
+      }
     });
+    console.log('Unsubscribing from push notifications.')
+    await subscription.unsubscribe();
+    // Finally, remove Service Worker
+    console.log('Removing Service Worker.')
+    await registration.unregister();
+    console.log('Successfully unsubscribed from push notifications.');
+    setSubscribeMessage();
+  });
 }
 
+// Add event listeners for subscribe and unsubscribe events
+document.getElementById('subscribebutton').addEventListener('click', subscribeToPushNotifications);
+document.getElementById('unsubscribebutton').addEventListener('click', unsubscribeToPushNotifications);
+
+// Set subscribe message when loading the page
 setSubscribeMessage();
