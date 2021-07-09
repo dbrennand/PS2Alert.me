@@ -73,7 +73,11 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
                 // Successfully found matching documents, iterate over each document using the subscription data to send a push notification
                 for (let doc = 0; doc < notifyDocuments.length; doc++) {
                     // Send push notification
-                    webpush.sendNotification(notifyDocuments[doc].subscription, JSON.stringify(pushNotification));
+                    try {
+                        webpush.sendNotification(notifyDocuments[doc].subscription, JSON.stringify(pushNotification));
+                    } catch (error) {
+                        console.error(`An error occurred sending push notification to endpoint: ${notifyDocuments[doc].subscription.endpoint}: ${error}`);
+                    }
                 }
                 console.log(`Push notification sent to ${notifyDocuments.length} subscribers for MetagameEvent with ID: ${metagameEventJson.instance_id}`);
             });
