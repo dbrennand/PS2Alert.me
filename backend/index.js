@@ -55,6 +55,7 @@ app.use(
     directives: {
       'default-src': ["'self'"],
       'script-src': ["'self'", 'https://ps2alert.me', 'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js'],
+      'img-src': ["'self'", 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/'],
       'style-src': ["'self'", 'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css', 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css'],
       'upgrade-insecure-requests': []
     },
