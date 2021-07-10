@@ -44,21 +44,39 @@ app.use(cookieParser(process.env.COOKIE_SECRET, {
   secure: process.env.NODE_ENV === 'production' ? true : false
 }));
 // Use Helmet to set useful security defaults
-//app.use((req, res, next) => {
-//  res.locals.cspNonce = crypto.randomBytes(16).toString("hex");
-//  next();
-//});
-// Use defaults for Content Security Policy (CSP) apart from specific directives
 app.use(
-  helmet.contentSecurityPolicy({
-    useDefaults: true,
-    directives: {
-      'default-src': ["'self'"],
-      'script-src': ["'self'", 'https://ps2alert.me', 'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js'],
-      'img-src': ["'self'", 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/'],
-      'style-src': ["'self'", 'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css', 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css'],
-      'upgrade-insecure-requests': []
+  helmet({
+    // https://github.com/helmetjs/helmet#reference
+    // Use defaults for Content Security Policy (CSP) apart from specific directives
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        'default-src': ["'self'"],
+        'script-src': ["'self'", 'https://ps2alert.me', 'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js'],
+        'img-src': ["'self'", 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/'],
+        'style-src': ["'self'", 'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css', 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css'],
+        'upgrade-insecure-requests': []
+      },
     },
+    // Disable and enable certain middlewares
+    crossOriginEmbedderPolicy: false,
+    crossOriginOpenerPolicy: false,
+    crossOriginResourcePolicy: false,
+    expectCt: true,
+    referrerPolicy: true,
+    hsts: {
+      preload: false
+    },
+    noSniff: true,
+    originAgentCluster: false,
+    dnsPrefetchControl: {
+      allow: true
+    },
+    ieNoOpen: true,
+    frameguard: true,
+    permittedCrossDomainPolicies: true,
+    hidePoweredBy: true,
+    xssFilter: true
   })
 );
 
