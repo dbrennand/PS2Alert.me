@@ -14,6 +14,10 @@ Browser notifications for Planetside 2 alerts.
 
 * [Helmet](https://www.npmjs.com/package/helmet)
 
+* [cookie-parser](https://github.com/expressjs/cookie-parser)
+
+* [csurf](https://github.com/expressjs/csurf)
+
 * [mongo-sanitize](https://github.com/vkarpov15/mongo-sanitize)
 
 * [web-push](https://www.npmjs.com/package/web-push)
