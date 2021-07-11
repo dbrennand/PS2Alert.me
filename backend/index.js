@@ -28,12 +28,12 @@ const port = 8080;
 const app = express();
 // Parse JSON
 app.use(express.json());
-// Parse cookies and configure cookie parser
+// Configure cookie parser
 app.use(cookieParser(process.env.COOKIE_SECRET, {
   // https://www.npmjs.com/package/cookie#options-1
   // One day in seconds
   maxAge: 24 * 60 * 60,
-  // This cookie cannot be accessed in the client's Javascript
+  // Make the cookie inaccessible in the client's Javascript
   httpOnly: true,
   // Declare if cookies should be restricted to a first-party or same-site context
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
