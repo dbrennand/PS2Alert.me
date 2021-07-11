@@ -34,9 +34,11 @@ const setSubscribeMessage = async () => {
     const subscription = await registration.pushManager.getSubscription();
     subscribedElement.setAttribute('class', `${subscription ? '' : 'd-none'} fs-5`);
     unsubscribedElement.setAttribute('class', `${subscription ? 'd-none' : ''} fs-5`);
-  } catch (e) {
+  } catch (error) {
     console.log("No registration found. Not subscribed.");
+    // Hide subscribed message
     subscribedElement.setAttribute('class', 'd-none fs-5');
+    // Show unsubscribed message
     unsubscribedElement.setAttribute('class', 'fs-5');
   }
 };
