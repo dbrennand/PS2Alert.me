@@ -75,7 +75,15 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
                 for (let doc = 0; doc < notifyDocuments.length; doc++) {
                     // Send push notification
                     try {
-                        webpush.sendNotification(notifyDocuments[doc].subscription, JSON.stringify(pushNotification));
+                        /*
+                        https://github.com/web-push-libs/web-push#input
+                        Set the time to live (TTL) option to 5 minutes (300 seconds)
+                        TTL describes how long the push notification is retained by the push service
+                        User's shouldn't receive a push notification for an alert that happened ages in the past
+                        This will tell the push service to attempt delivery of the push notification for 5 minutes, if it is never delivered, discard it
+                        The default is 4 weeks!
+                        */
+                        webpush.sendNotification(notifyDocuments[doc].subscription, JSON.stringify(pushNotification), {TTL: 300});
                     } catch (error) {
                         console.error(`An error occurred sending push notification to endpoint: ${notifyDocuments[doc].subscription.endpoint}: ${error}`);
                     }
