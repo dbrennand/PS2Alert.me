@@ -106,7 +106,7 @@ app.post('/add-subscription', csrfProtection, async (req, res) => {
       if (error) {
         // Log error and return HTTP error status code
         console.error(`An error occurred saving Notify document to MongoDB: ${error}`);
-        res.sendStatus(500);
+        res.sendStatus(409);
         return;
       }
       console.log(`Successfully added Notify document to MongoDB: ${doc}`)
