@@ -47,7 +47,7 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
             durable: true
         });
         console.log(`Waiting for messages (MetagameEvents) from queue: ${queue}. To exit press CTRL+C`);
-        // Callback for when RabbitMQ pushes messages to the consumer
+        // Callback function for when RabbitMQ pushes messages to the consumer
         channel.consume(queue, function (message) {
             console.log(`Received message: ${message.content}`);
             // Parse MetagameEvent JSON
@@ -60,6 +60,7 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
                 title: `${serverName}: Alert started!`,
                 body: `On continent ${zoneName}.`
             };
+            // Output push notification object
             console.log(pushNotification);
             // Get matching Notify documents from MongoDB
             Notify.find({ servers: metagameEventJson.world_id }, function (error, notifyDocuments) {
@@ -68,13 +69,21 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
                     console.error(`An error occurred finding Notify documents from MongoDB: ${error}`);
                     return;
                 }
-                // For debugging purposes, output matching documents
-                console.log(`Matching documents: ${notifyDocuments}`);
+                // Output number matching documents
+                console.log(`Matching documents found: ${notifyDocuments.length}`);
                 // Successfully found matching documents, iterate over each document using the subscription data to send a push notification
                 for (let doc = 0; doc < notifyDocuments.length; doc++) {
                     // Send push notification
                     try {
-                        webpush.sendNotification(notifyDocuments[doc].subscription, JSON.stringify(pushNotification));
+                        /*
+                        https://github.com/web-push-libs/web-push#input
+                        Set the time to live (TTL) option to 5 minutes (300 seconds)
+                        TTL describes how long the push notification is retained by the push service
+                        User's shouldn't receive a push notification for an alert that happened ages in the past
+                        This will tell the push service to attempt delivery of the push notification for 5 minutes, if it is never delivered, discard it
+                        The default is 4 weeks!
+                        */
+                        webpush.sendNotification(notifyDocuments[doc].subscription, JSON.stringify(pushNotification), {TTL: 300});
                     } catch (error) {
                         console.error(`An error occurred sending push notification to endpoint: ${notifyDocuments[doc].subscription.endpoint}: ${error}`);
                     }
@@ -87,6 +96,7 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
     });
 });
 
+// Function to get a Planetside 2 server (world) name from an ID
 function getServerName(serverID) {
     // Server IDs and names: https://ps2.fisu.pw/api/territory/
     // Declare object containing server IDs and names
@@ -100,6 +110,7 @@ function getServerName(serverID) {
     return serverInfo[serverID];
 };
 
+// Function to get a Planetside 2 zone (continent) name from an ID
 function getZoneName(zoneID) {
     // Zone (continent) IDs and names: https://ps2.fisu.pw/api/territory/
     // Declare object containing zone (continent) IDs and names

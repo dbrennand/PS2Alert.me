@@ -14,6 +14,10 @@ Browser notifications for Planetside 2 alerts.
 
 * [Helmet](https://www.npmjs.com/package/helmet)
 
+* [cookie-parser](https://github.com/expressjs/cookie-parser)
+
+* [csurf](https://github.com/expressjs/csurf)
+
 * [mongo-sanitize](https://github.com/vkarpov15/mongo-sanitize)
 
 * [web-push](https://www.npmjs.com/package/web-push)
@@ -81,6 +85,10 @@ Use the following steps to deploy the PS2Alert.me stack locally using Docker:
 2. Bring up the project stack: `docker-compose -f docker-compose-dev.yaml up -d --build`
 
 The frontend will then be available at: http://localhost:8080
+
+## Known Issue(s)
+
+The [notification icon](frontend/sw.js) does not show in Microsoft Edge (Version 91.0.864.67 (Official Build) (64-bit)) push notifications due to a Content Security Policy (CSP) violation error: `img-src 'self' data:`. However, the *img-src* CSP directive is set correctly on the [backend](https://github.com/dbrennand/PS2Alert.me/blob/csrf-csp/backend/index.js#L56) and works as expected (the icon is shown in push notifications) in Google Chrome (Version 91.0.4472.124 (Official Build) (64-bit)) and Firefox (Version 89.0.2 (64-bit)).
 
 ## Authors -- Contributors
 

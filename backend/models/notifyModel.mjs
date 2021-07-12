@@ -1,3 +1,4 @@
+// Import required library
 import mongoose from 'mongoose';
 
 // Define Schema for Notify model
