@@ -68,7 +68,7 @@ The process of subscribing to push notifications is as follows:
 
 3. The chosen server(s) and subscription data are then sent to PS2Alert.me in JSON format (see example below):
 
-    ```json
+    ```
     {
     subscription: {
         keys: {
