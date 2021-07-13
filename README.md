@@ -58,6 +58,37 @@ The project has several components:
 
     - Watches the RabbitMQ queue for *MetagameEvents*. When a *MetagameEvent* occurs in the queue, find all Notify documents that are subscribed to push notifications for the server which the *MetagameEvent* is occurring on and send a push notification to each.
 
+### How does PS2Alert.me send a push notification and what data is collected?
+
+The process of subscribing to push notifications is as follows:
+
+1. A Service Worker is registered in the browser. The Service Worker is responsible for listening for incoming push notifications from a push service. Each browser has its own push service.
+
+2. The chosen server(s) are retrieved and a [subscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription) is created. The subscription contains an endpoint and encryption keys for sending a push notification securely.
+
+3. The chosen server(s) and subscription data are then sent to PS2Alert.me in JSON format (see example below):
+
+    ```json
+    {
+    subscription: {
+        keys: {
+        auth: 'Ma--_fi1qKbIkRR-BWdjaL',
+        p256dh: 'ALazAmWPKHJgS5RIpUTrokhJ-2F36BgtS4yHJ2i5wYFM12Rw5Dq6JgN0MZS-5XAtzOkA0fjd82_qDZ13u9R_ki0'
+        },
+        endpoint: 'https://updates.push.services.mozilla.com/wpush/v2/gADADABg7aLCNwpbXma7Xkx5Oy90BY_yfChS4GXeb8fKPAb5nAi77iRqPdljCA0hX_6ADgaShrAL0CQTwqzqCXLhROWNRH0ddTIn7Eb29o-2Zt13zEHGKlULC5VqOuWGgdXWbH8bEUX38jABy4APmgudRM4uiiJI2FjCWnWdo56-WQnC5EauYAM'
+    },
+    servers: [ '13' ],
+    }
+    ```
+
+4. When an alert occurs for a server, all users subscribed to push notifications for that server are sent a push notification. The PS2Alert.me consumer is responsible for sending the push notification to the push service, which handles delivery of the notification to the user's browser.
+
+The images below (from [Google Developers](https://developers.google.com/web/fundamentals/push-notifications/how-push-works)) provide a graphical representation of how a push notification is sent to a push service and handled by a Service Worker.
+
+![](https://developers.google.com/web/fundamentals/push-notifications/images/svgs/server-to-push-service.svg)
+
+![](https://developers.google.com/web/fundamentals/push-notifications/images/svgs/push-service-to-sw-event.svg)
+
 ## Development and Deployment
 
 The project stack can be deployed locally using [Docker](https://www.docker.com/).
