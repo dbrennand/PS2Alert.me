@@ -85,7 +85,7 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
                         This will tell the push service to attempt delivery of the push notification for 5 minutes, if it is never delivered, discard it
                         The default is 4 weeks!
                         */
-                        webpush.sendNotification(notifyDocuments[doc].subscription, JSON.stringify(pushNotification), {TTL: 300});
+                        webpush.sendNotification(notifyDocuments[doc].subscription, JSON.stringify(pushNotification), { TTL: 300 });
                     } catch (error) {
                         console.error(`An error occurred sending push notification to endpoint: ${notifyDocuments[doc].subscription.endpoint}: ${error}`);
                     }
