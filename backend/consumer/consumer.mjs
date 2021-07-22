@@ -50,6 +50,8 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
         // Callback function for when RabbitMQ pushes messages to the consumer
         channel.consume(queue, function (message) {
             console.log(`Received message: ${message.content}`);
+            // Acknowledge the message
+            channel.ack(message);
             // Parse MetagameEvent JSON
             var metagameEventJson = JSON.parse(message.content);
             // Get server (world) name and zone (continent) name from IDs
@@ -90,8 +92,6 @@ amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, fun
                 }
                 console.log(`Push notification sent to ${notifyDocuments.length} subscribers for MetagameEvent with ID: ${metagameEventJson.instance_id}`);
             });
-        }, {
-            noAck: true
         });
     });
 });
