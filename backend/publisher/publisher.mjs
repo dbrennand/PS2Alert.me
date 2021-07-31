@@ -1,6 +1,7 @@
 // Import required libraries
 import amqp from 'amqplib';
-import { Client, Events } from "ps2census";
+import census from 'ps2census';
+const { Client, Events } = census;
 
 // Get RabbitMQ connection URI
 const connectionUri = process.env.RABBIT_CONNECTION_URI;
