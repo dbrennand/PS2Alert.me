@@ -18,13 +18,12 @@ webpush.setVapidDetails(
     privateVapidKey,
 );
 
-// Get RabbitMQ credentials
-const rabbitmqUsername = process.env.RABBITMQUSERNAME;
-const rabbitmqPassword = process.env.RABBITMQPASSWORD;
+// Get RabbitMQ connection URI
+const connectionUri = process.env.RABBIT_CONNECTION_URI;
 
 // Connect to RabbitMQ
 console.log('Connecting to RabbitMQ...');
-amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`, function (error, connection) {
+amqp.connect(connectionUri, function (error, connection) {
     if (error) {
         // Log error to console and exit
         console.error(`An error occurred connecting to RabbitMQ: ${error}`);

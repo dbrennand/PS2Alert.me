@@ -1,15 +1,14 @@
 // Import required library
 import mongoose from 'mongoose';
 
-// Get database credentials
-const dbUsername = process.env.DBUSERNAME;
-const dbPassword = process.env.DBPASSWORD;
+// Get MongoDB connection URI
+const connectionUri = process.env.MONGO_CONNECTION_URI;
 
 // Function to connect to MongoDB
 export default async () => {
     // Connect to MongoDB
     try {
-        await mongoose.connect(`mongodb://${dbUsername}:${dbPassword}@db:27017/PS2AlertMe`, {
+        await mongoose.connect(connectionUri, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useCreateIndex: true

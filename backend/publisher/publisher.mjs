@@ -2,13 +2,12 @@
 import amqp from 'amqplib';
 import { Client, Events } from "ps2census";
 
-// Get RabbitMQ credentials
-const rabbitmqUsername = process.env.RABBITMQUSERNAME;
-const rabbitmqPassword = process.env.RABBITMQPASSWORD;
+// Get RabbitMQ connection URI
+const connectionUri = process.env.RABBIT_CONNECTION_URI;
 
 // Connect to RabbitMQ
 console.log('Connecting to RabbitMQ...');
-const connection = await amqp.connect(`amqp://${rabbitmqUsername}:${rabbitmqPassword}@rabbitmq:5672`);
+const connection = await amqp.connect(connectionUri);
 
 // Create a new channel
 console.log('Creating a new channel.');
