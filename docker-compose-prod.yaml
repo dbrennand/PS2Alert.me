@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   rabbitmq:
-    image: rabbitmq:3-alpine
+    image: rabbitmq:3.8-alpine
     container_name: rabbitmq
     hostname: rabbitmq
     environment:
