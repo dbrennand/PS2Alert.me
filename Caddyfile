@@ -1,4 +1,8 @@
 # PS2Alert.me production Caddyfile
+{
+    email {$EMAIL}
+    admin off
+}
 # Handles serving PS2Alert.me over HTTPS with automatic cert renewal
 # Also, automatically redirects all HTTP traffic to HTTPS
 {$SITE_ADDRESS} {
