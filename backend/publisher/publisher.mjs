@@ -19,13 +19,13 @@ const channel = await connection.createChannel();
 const serviceID = process.env.SERVICEID;
 
 // Declare ps2census subscription object
-const subscriptions = [{
+const subscriptions = {
     // Connery, Miller, Cobalt, Emerald, SolTech
     worlds: ['1', '10', '13', '17', '40'],
     characters: ['all'],
     eventNames: ['MetagameEvent'],
     logicalAndCharactersWithWorlds: true,
-}];
+};
 
 // Declare Planetside 2 zones (continents)
 // Zone (continent) IDs and names: https://ps2.fisu.pw/api/territory/
@@ -34,7 +34,9 @@ const zones = ['2', '4', '6', '8']
 
 // Initalise ps2census event stream client
 const client = new CensusClient(serviceID, 'ps2', {
-    streamManager: {subscriptions}
+    streamManager: {
+        subscription: subscriptions
+    },
 });
 
 // Define client behaviour(s)
@@ -50,6 +52,7 @@ client.on(Events.PS2_META_EVENT, async (event) => {
         console.log(`MetagameEvent with ID: ${event.instance_id} meets criteria. Sending to queue.`)
         await sendtoQueue(channel, event.raw);
     } else {
+        console.log(`MetagameEvent with ID: ${event.instance_id} doesn't meet the criteria.`)
         return;
     };
 });
