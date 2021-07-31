@@ -19,13 +19,13 @@ const channel = await connection.createChannel();
 const serviceID = process.env.SERVICEID;
 
 // Declare ps2census subscription object
-const subscription = {
+const subscriptions = [{
     // Connery, Miller, Cobalt, Emerald, SolTech
     worlds: ['1', '10', '13', '17', '40'],
     characters: ['all'],
     eventNames: ['MetagameEvent'],
     logicalAndCharactersWithWorlds: true,
-};
+}];
 
 // Declare Planetside 2 zones (continents)
 // Zone (continent) IDs and names: https://ps2.fisu.pw/api/territory/
@@ -33,10 +33,8 @@ const subscription = {
 const zones = ['2', '4', '6', '8']
 
 // Initalise ps2census event stream client
-const client = new Client(serviceID, {
-    streamManagerConfig: {
-        subscription
-    },
+const client = new Client(serviceID, 'ps2', {
+    streamManager: {subscriptions}
 });
 
 // Define client behaviour(s)
