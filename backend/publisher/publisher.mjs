@@ -1,7 +1,7 @@
 // Import required libraries
 import amqp from 'amqplib';
 import census from 'ps2census';
-const { Client, Events } = census;
+const { CensusClient, Events } = census;
 
 // Get RabbitMQ connection URI
 const connectionUri = process.env.RABBIT_CONNECTION_URI;
@@ -33,7 +33,7 @@ const subscriptions = [{
 const zones = ['2', '4', '6', '8']
 
 // Initalise ps2census event stream client
-const client = new Client(serviceID, 'ps2', {
+const client = new CensusClient(serviceID, 'ps2', {
     streamManager: {subscriptions}
 });
 
