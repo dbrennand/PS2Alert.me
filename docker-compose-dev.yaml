@@ -4,8 +4,8 @@ services:
     image: mongo:4
     container_name: mongodb
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${DBUSERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${DBPASSWORD}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
       - MONGO_INITDB_DATABASE=PS2AlertMe
     expose:
       - 27017
@@ -18,8 +18,8 @@ services:
     container_name: rabbitmq
     hostname: rabbitmq
     environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQUSERNAME}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQPASSWORD}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
     expose:
       - 5672
     restart: unless-stopped
@@ -30,8 +30,7 @@ services:
     image: publisher:1
     container_name: publisher
     environment:
-      - RABBITMQUSERNAME=${RABBITMQUSERNAME}
-      - RABBITMQPASSWORD=${RABBITMQPASSWORD}
+      - RABBIT_CONNECTION_URI=${RABBIT_CONNECTION_URI}
       - SERVICEID=${SERVICEID}
     depends_on:
       - rabbitmq
@@ -46,10 +45,8 @@ services:
       - PUBLICVAPIDKEY=${PUBLICVAPIDKEY}
       - PRIVATEVAPIDKEY=${PRIVATEVAPIDKEY}
       - CONTACTEMAIL=${CONTACTEMAIL}
-      - RABBITMQUSERNAME=${RABBITMQUSERNAME}
-      - RABBITMQPASSWORD=${RABBITMQPASSWORD}
-      - DBUSERNAME=${DBUSERNAME}
-      - DBPASSWORD=${DBPASSWORD}
+      - RABBIT_CONNECTION_URI=${RABBIT_CONNECTION_URI}
+      - MONGO_CONNECTION_URI=${MONGO_CONNECTION_URI}
     depends_on:
       - rabbitmq
       - db
@@ -61,8 +58,7 @@ services:
     image: ps2alertme:1
     container_name: PS2AlertMe
     environment:
-      - DBUSERNAME=${DBUSERNAME}
-      - DBPASSWORD=${DBPASSWORD}
+      - MONGO_CONNECTION_URI=${MONGO_CONNECTION_URI}
       - COOKIE_SECRET=${COOKIE_SECRET}
       - NODE_ENV=development
     ports:
