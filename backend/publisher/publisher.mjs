@@ -43,6 +43,7 @@ const client = new CensusClient(serviceID, 'ps2', {
 client.on('ready', () => { console.log('Client ready and listening for MetagameEvents.'); }); // Client is ready
 client.on('reconnecting', () => { console.log('Client reconnecting...'); }); // Client is reconnecting
 client.on('disconnected', () => { console.log('Client disconnected.'); }); // Client got disconnected
+client.on('duplicate', (dupe) => { console.log(`A duplicate event occurred whilst listening for MetagameEvents: ${dupe}`); }); // Duplicate, when a duplicate event has been received
 client.on('error', (error) => { console.log(`An error occurred whilst listening for MetagameEvents: ${error}`); }); // Error
 client.on('warn', (warn) => { console.log(`A warning occurred whilst listening for MetagameEvents: ${warn}`); }); // Warning, when receiving a corrupt message
 client.on(Events.PS2_META_EVENT, async (event) => {
