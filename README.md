@@ -38,7 +38,7 @@ The project has several components:
 
 1. Web application (frontend - PS2Alert.me):
 
-    - Users select the Planetside 2 server(s) to subscribe to alert notifications for and a Service Worker is registered to receive push notifications.
+    - Users select the Planetside 2 server(s) to subscribe to alert notifications for and a [Service Worker](frontend/sw.js) is registered to receive push notifications.
 
 2. MongoDB (Backend):
 
@@ -62,7 +62,7 @@ The project has several components:
 
 The process of subscribing to push notifications is as follows:
 
-1. A Service Worker is registered in the browser. The Service Worker is responsible for listening for incoming push notifications from a push service. Each browser has its own push service.
+1. A [Service Worker](frontend/sw.js) is registered in the browser. The Service Worker is responsible for listening for incoming push notifications from a push service. Each browser has its own push service.
 
 2. The chosen server(s) are retrieved and a [subscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription) is created. The subscription contains an endpoint and encryption keys for sending a push notification securely.
 
