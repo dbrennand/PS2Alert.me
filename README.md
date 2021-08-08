@@ -64,6 +64,10 @@ The process of subscribing to push notifications is as follows:
 
 1. A [Service Worker](frontend/sw.js) is registered in the browser. The Service Worker is responsible for listening for incoming push notifications from a push service. Each browser has its own push service.
 
+    > [!NOTE]
+    >
+    > Once the Service Worker is registered, PS2Alert.me can be closed. The beauty of the Service Worker is that it continues to work in the background as long as the browser is open.
+
 2. The chosen server(s) are retrieved and a [subscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription) is created. The subscription contains an endpoint and encryption keys for sending a push notification securely.
 
 3. The chosen server(s) and subscription data are then sent to PS2Alert.me in JSON format (see example below):
