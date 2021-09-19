@@ -79,4 +79,7 @@ async function sendtoQueue(channel, metagameEvent) {
     };
 };
 
+// Configure 1HR interval to rerun all subscriptions to the websocket API
+setInterval(client.resubscribe(), 3600000);
+
 client.watch();
