@@ -84,6 +84,6 @@ async function sendtoQueue(channel, metagameEvent) {
 setInterval(async function (client) {
     console.log('Rerun all subscriptions.');
     await client.resubscribe();
-}, 120000, client);
+}, 300000, client);
 
 client.watch();
