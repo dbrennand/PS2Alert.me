@@ -85,7 +85,7 @@ amqp.connect(connectionUri, function (error, connection) {
                     */
                     console.log(`Sending push notification using subscription: ${notifyDocuments[doc].subscription}.`);
                     webpush.sendNotification(notifyDocuments[doc].subscription, JSON.stringify(pushNotification), { TTL: 300 })
-                        .catch(pushError => console.log(`An error occurred sending push notification: ${pushError.body}`))
+                        .catch(pushError => console.log(`An error occurred sending push notification: ${pushError}`))
                 }
                 console.log(`Push notification sent to ${notifyDocuments.length} subscribers for MetagameEvent with ID: ${metagameEventJson.instance_id}`);
             });
