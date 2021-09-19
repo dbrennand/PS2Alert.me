@@ -28,6 +28,8 @@ Browser notifications for Planetside 2 alerts.
 
 * [ps2census](https://github.com/microwavekonijn/ps2census)
 
+* [Winston](https://github.com/winstonjs/winston)
+
 ## Introduction
 
 PS2Alert.me allows a user to receive push notifications for Planetside 2 alerts in their browser. The application achieves this by leveraging [Service Workers](https://developers.google.com/web/fundamentals/primers/service-workers), the [Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API), [Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API) and [Push Services](https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications#push_notification_terms).
