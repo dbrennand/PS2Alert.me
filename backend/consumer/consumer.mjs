@@ -83,9 +83,9 @@ amqp.connect(connectionUri, function (error, connection) {
                     This will tell the push service to attempt delivery of the push notification for 5 minutes, if it is never delivered, discard it
                     The default is 4 weeks!
                     */
-                    console.log(`Sending push notification using subscription: ${notifyDocuments[doc].subscription}`);
+                    console.log(`Sending push notification to endpoint: ${notifyDocuments[doc].subscription.endpoint}`);
                     webpush.sendNotification(notifyDocuments[doc].subscription, JSON.stringify(pushNotification), { TTL: 300 })
-                        .catch(pushError => console.log(`An error occurred sending push notification: ${pushError}`))
+                        .catch(pushError => console.log(`An error occurred sending push notification. Status code: ${pushError.statusCode}, Body: ${pushError.body}, Headers: ${pushError.headers}`));
                 }
                 console.log(`Push notification sent to ${notifyDocuments.length} subscribers for MetagameEvent with ID: ${metagameEventJson.instance_id}`);
             });
