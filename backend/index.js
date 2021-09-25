@@ -1,4 +1,5 @@
 // Import required libraries
+import pino from 'pino-http';
 import sanitize from 'mongo-sanitize';
 import express from 'express';
 import csurf from 'csurf';
@@ -24,8 +25,19 @@ const csrfProtection = csurf({
 })
 
 // Setup Express server
-const port = 8080;
 const app = express();
+// Configure Pino logger
+app.use(pino(
+  {
+    ignore: 'pid,hostname',
+    autoLogging: false,
+    formatters: {
+      level: (label) => {
+        return { level: label };
+      }
+    }
+  }
+));
 // Parse JSON
 app.use(express.json());
 // Configure cookie parser
@@ -95,47 +107,42 @@ app.get('/', csrfProtection, async (req, res) => {
 
 // /add-subscription API route
 app.post('/add-subscription', csrfProtection, async (req, res) => {
-  console.log(`Subscribing ${req.body.subscription.endpoint} for push notifications.`);
-  try {
-    // Sanitise req.body
-    const cleanBody = await sanitiseInput(req.body);
-    // Create newNotify document from Notify model
-    const newNotify = new Notify(cleanBody);
-    // Save document to MongoDB
-    await newNotify.save({ validateBeforeSave: true, checkKeys: true }, async function (error, doc, _) {
-      if (error) {
-        // Log error and return HTTP error status code
-        console.error(`An error occurred saving Notify document to MongoDB: ${error}`);
-        res.sendStatus(500);
-        return;
-      }
-      console.log(`Successfully added Notify document to MongoDB: ${doc}`)
-      // Successfully created resource HTTP status code
-      res.sendStatus(201);
-    });
-  } catch (error) {
-    // Log error and return HTTP error status code
-    console.error(`An error occurred during the creation and saving of a Notify document to MongoDB: ${error}`);
-    res.sendStatus(500);
-  }
+  req.log.info(`Subscribing ${req.body.subscription.endpoint} for alert push notifications.`);
+  // Sanitise req.body to mitigate against query selector injection attacks
+  const cleanBody = await sanitiseInput(req.body);
+  // Create newNotify document from Notify model
+  const newNotify = new Notify(cleanBody);
+  // Save document to MongoDB
+  await newNotify.save({ validateBeforeSave: true, checkKeys: true }, async function (error, doc, _) {
+    if (error) {
+      // Log error and return HTTP error status code
+      req.log.error(`Failed to save Notify document to MongoDB: ${error}`);
+      res.sendStatus(500);
+      return;
+    }
+    req.log.info(`Successfully added Notify document to MongoDB: ${doc}`);
+    // Successfully created resource HTTP status code
+    res.sendStatus(201);
+  });
 });
 
 // /remove-subscription API route
 app.delete('/remove-subscription', csrfProtection, async (req, res) => {
-  console.log(`Unsubscribing ${req.body.endpoint} from push notifications.`);
+  req.log.info(`Unsubscribing ${req.body.endpoint} from alert push notifications.`);
   // Sanitise req.body.endpoint to mitigate against query selector injection attacks
   const cleanEndpoint = await sanitiseInput(req.body.endpoint);
+  req.log.info(`Deleting Notify document matching the endpoint: ${cleanEndpoint}`);
   // Remove Notify object containing the matching endpoint
   await Notify.where().findOneAndDelete({
     "subscription.endpoint": { $eq: cleanEndpoint }
   }, { rawResult: false }, async function (error, doc) {
     if (error) {
       // Log error and return HTTP error status code
-      console.error(`An error occurred removing Notify document with endpoint: ${cleanEndpoint} from MongoDB: ${error}`);
+      req.log.error(`Failed to delete Notify document matching the endpoint ${cleanEndpoint} from MongoDB: ${error}`);
       res.sendStatus(500);
       return;
     };
-    console.log(`Successfully removed Notify document with endpoint: ${cleanEndpoint} from MongoDB: ${doc}`)
+    req.log.info(`Successfully deleted Notify document matching the endpoint ${doc.subscription.endpoint} from MongoDB.`);
     // Successfully deleted resource HTTP status code
     res.sendStatus(200);
   }
@@ -146,6 +153,4 @@ app.delete('/remove-subscription', csrfProtection, async (req, res) => {
 database();
 
 // Start the Express server
-app.listen(port, () => {
-  console.log(`PS2Alert.me listening on port: ${port}`);
-});
+app.listen(8080);
