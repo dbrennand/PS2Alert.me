@@ -65,8 +65,7 @@ async function sendtoQueue(channel, metagameEvent) {
     // Declare name of the queue
     var queue = 'MetagameEvent';
     // Create queue
-    // Does nothing if the queue already exists
-    logger.info(`Creating queue: ${queue} if it does not already exist.`);
+    // NOTE: Does nothing if the queue already exists
     await channel.assertQueue(queue, {
         durable: true
     });
