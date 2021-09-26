@@ -9,7 +9,7 @@ import helmet from 'helmet';
 import path from 'path';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Import custom functions and model
+// Custom imports and model
 import database from './config/database.mjs';
 import Notify from './models/notifyModel.mjs';
 
