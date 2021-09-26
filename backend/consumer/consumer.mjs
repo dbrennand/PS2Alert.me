@@ -1,7 +1,7 @@
 // Import required libraries
 import amqp from 'amqplib/callback_api.js';
 import webpush from 'web-push';
-// Import custom functions and model
+// Custom imports and model
 import database from './config/database.mjs';
 import Notify from './models/notifyModel.mjs';
 
