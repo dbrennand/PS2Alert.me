@@ -25,8 +25,8 @@ services:
     restart: unless-stopped
   publisher:
     build:
-      context: ./backend/publisher
-      dockerfile: Dockerfile
+      context: ./backend
+      dockerfile: $PWD/backend/publisher/Dockerfile
     image: publisher:1
     container_name: publisher
     environment:
