@@ -2,16 +2,18 @@
 import amqp from 'amqplib';
 import census from 'ps2census';
 const { CensusClient, Events } = census;
+// Custom import
+import logger from './config/logger.mjs';
 
 // Get RabbitMQ connection URI
 const connectionUri = process.env.RABBIT_CONNECTION_URI;
 
 // Connect to RabbitMQ
-console.log('Connecting to RabbitMQ...');
+logger.info('Connecting to RabbitMQ.');
 const connection = await amqp.connect(connectionUri);
 
 // Create a new channel
-console.log('Creating a new channel.');
+logger.info('Creating a new channel.');
 const channel = await connection.createChannel();
 
 // Get Planetside 2 Census API service ID
@@ -40,20 +42,20 @@ const client = new CensusClient(serviceID, 'ps2', {
 });
 
 // Define client behaviour(s)
-client.on('ready', () => { console.log('Client ready and listening for MetagameEvents.'); }); // Client is ready
-client.on('reconnecting', () => { console.log('Client reconnecting...'); }); // Client is reconnecting
-client.on('disconnected', () => { console.log('Client disconnected.'); }); // Client got disconnected
-client.on('duplicate', (dupe) => { console.log(`A duplicate event occurred whilst listening for MetagameEvents: ${dupe}`); }); // Duplicate, when a duplicate event has been received
-client.on('error', (error) => { console.log(`An error occurred whilst listening for MetagameEvents: ${error}`); }); // Error
-client.on('warn', (warn) => { console.log(`A warning occurred whilst listening for MetagameEvents: ${warn}`); }); // Warning, when receiving a corrupt message
-client.on(Events.PS2_META_EVENT, async (event) => {
+client.on('ready', () => { logger.info('Client ready and listening for MetagameEvents.'); }); // Client is ready
+client.on('reconnecting', () => { logger.info('Client reconnecting.'); }); // Client is reconnecting
+client.on('disconnected', () => { logger.warn('Client disconnected.'); }); // Client got disconnected
+client.on('duplicate', (dupe) => { logger.warn(`A duplicate event occurred whilst listening for MetagameEvents: ${dupe}`); }); // Duplicate, when a duplicate event has been received
+client.on('error', (error) => { logger.error(`An error occurred whilst listening for MetagameEvents: ${error}`); }); // Error
+client.on('warn', (warn) => { logger.warn(`A warning occurred whilst listening for MetagameEvents: ${warn}`); }); // Warning, when receiving a corrupt message
+client.on(Events.PS2_META_EVENT, async (metagameEvent) => {
     // Check MetagameEvent is in a started state and the zone is in the zones array
-    if (event.metagame_event_state_name === 'started' && zones.includes(event.zone_id)) {
+    if (metagameEvent.metagame_event_state_name === 'started' && zones.includes(metagameEvent.zone_id)) {
         // MetagameEvent is in a started state and is for a recognised zone (continent)
-        console.log(`MetagameEvent with ID: ${event.instance_id} meets criteria. Sending to queue.`)
-        await sendtoQueue(channel, event.raw);
+        logger.info(metagameEvent.raw, `MetagameEvent with ID: ${metagameEvent.instance_id} meets criteria. Sending to queue.`);
+        await sendtoQueue(channel, metagameEvent.raw);
     } else {
-        console.log(`MetagameEvent with ID: ${event.instance_id} doesn't meet the criteria.`)
+        logger.info(metagameEvent.raw, `MetagameEvent with ID: ${metagameEvent.instance_id} doesn't meet the criteria.`);
         return;
     };
 });
@@ -64,18 +66,17 @@ async function sendtoQueue(channel, metagameEvent) {
     var queue = 'MetagameEvent';
     // Create queue
     // Does nothing if the queue already exists
-    console.log(`Creating queue: ${queue} if it does not already exist.`);
+    logger.info(`Creating queue: ${queue} if it does not already exist.`);
     await channel.assertQueue(queue, {
         durable: true
     });
-    // Send MetagameEvent to queue
+    // Send MetagameEvent to the queue
     try {
-        console.log(`Sending MetagameEvent with ID: ${metagameEvent.instance_id} to the queue.`);
+        logger.info(metagameEvent, `Sending MetagameEvent with ID: ${metagameEvent.instance_id} to the queue: ${queue}`);
         await channel.sendToQueue(queue, Buffer.from(JSON.stringify(metagameEvent)));
-        console.log(`Successfully sent MetagameEvent with ID: ${metagameEvent.instance_id} to the queue.`);
+        logger.info(metagameEvent, `Successfully sent MetagameEvent with ID: ${metagameEvent.instance_id} to the queue: ${queue}`);
     } catch (error) {
-        // Log error to console
-        console.error(`An error occurred sending MetagameEvent with ID: ${metagameEvent.instance_id} to the queue: ${error}`);
+        logger.error(metagameEvent, `Failed to send MetagameEvent with ID: ${metagameEvent.instance_id} to the queue: ${queue}\n${error}`);
     };
 };
 
