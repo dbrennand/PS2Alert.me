@@ -1,10 +1,12 @@
 // Import required library
 import mongoose from 'mongoose';
+// Custom import
+import logger from './logger.mjs';
 
 // Get MongoDB connection URI
 const connectionUri = process.env.MONGO_CONNECTION_URI;
 
-// Function to connect to MongoDB
+// Export function to connect to MongoDB
 export default async () => {
     // Connect to MongoDB
     try {
@@ -13,10 +15,10 @@ export default async () => {
             useUnifiedTopology: true,
             useCreateIndex: true
         });
-        console.log('Connected to MongoDB.')
+        logger.info('Connected to MongoDB.');
     } catch (error) {
         // Log error and exit
-        console.error(`An error occurred when connecting to MongoDB: ${error}`);
+        logger.error(`Failed to connect to MongoDB: ${error}`);
         process.exit(1);
     }
 };
