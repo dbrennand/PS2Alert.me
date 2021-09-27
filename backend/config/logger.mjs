@@ -1,4 +1,4 @@
-// Import required libraries
+// Import required library
 import pino from 'pino';
 
 // Export Pino logger
