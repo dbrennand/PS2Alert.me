@@ -82,7 +82,7 @@ async function sendtoQueue(channel, metagameEvent) {
 // Configure 5 minute interval to rerun all subscriptions to the websocket API
 // This is to ensure our connection doesn't go stale causing loss of events
 setInterval(async function (client) {
-    console.log('Rerun all subscriptions.');
+    logger.info('Rerun all subscriptions.');
     await client.resubscribe();
 }, 300000, client);
 
