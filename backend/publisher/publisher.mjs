@@ -31,8 +31,8 @@ const subscriptions = {
 
 // Declare Planetside 2 zones (continents)
 // Zone (continent) IDs and names: https://ps2.fisu.pw/api/territory/
-// Indar, Hossin, Amerish, Esamir
-const zones = ['2', '4', '6', '8']
+// Indar, Hossin, Amerish, Esamir, Koltyr
+const zones = ['2', '4', '6', '8', '14']
 
 // Initalise ps2census event stream client
 const client = new CensusClient(serviceID, 'ps2', {

@@ -116,6 +116,7 @@ function getZoneName(zoneID) {
         '4': 'Hossin',
         '6': 'Amerish',
         '8': 'Esamir',
+        '14': 'Koltyr'
     };
     return zoneInfo[zoneID];
 };
