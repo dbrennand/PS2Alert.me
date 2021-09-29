@@ -3,6 +3,7 @@ import amqp from 'amqplib/callback_api.js';
 import webpush from 'web-push';
 // Custom imports and model
 import database from './config/database.mjs';
+import logger from './config/logger.mjs';
 import Notify from './models/notifyModel.mjs';
 
 // Connect to MongoDB
@@ -22,19 +23,18 @@ webpush.setVapidDetails(
 const connectionUri = process.env.RABBIT_CONNECTION_URI;
 
 // Connect to RabbitMQ
-console.log('Connecting to RabbitMQ...');
+logger.info('Connecting to RabbitMQ.');
 amqp.connect(connectionUri, function (error, connection) {
     if (error) {
-        // Log error to console and exit
-        console.error(`An error occurred connecting to RabbitMQ: ${error}`);
+        // Log error and exit
+        logger.error(`Failed to connect to RabbitMQ: ${error}`);
         process.exit(1);
     };
     // Create a new channel
-    console.log('Creating a new channel.');
+    logger.info('Creating a new channel.');
     connection.createChannel(function (error, channel) {
         if (error) {
-            // Log error to console, close connection and exit
-            console.error(`An error occurred creating a new channel to RabbitMQ: ${error}`);
+            logger.error(`Failed to create a new channel to RabbitMQ: ${error}`);
             connection.close();
             process.exit(1);
         };
@@ -45,14 +45,15 @@ amqp.connect(connectionUri, function (error, connection) {
         channel.assertQueue(queue, {
             durable: true
         });
-        console.log(`Waiting for messages (MetagameEvents) from queue: ${queue}. To exit press CTRL+C`);
+        logger.info(`Waiting for messages (MetagameEvents) from RabbitMQ queue: ${queue}.`);
         // Callback function for when RabbitMQ pushes messages to the consumer
         channel.consume(queue, function (message) {
-            console.log(`Received message: ${message.content}`);
+            logger.info(`Message received: ${message.content}`);
             // Acknowledge the message
             channel.ack(message);
             // Parse MetagameEvent JSON
             var metagameEventJson = JSON.parse(message.content);
+            logger.info(metagameEventJson, 'Parsed MetagameEvent JSON.');
             // Get server (world) name and zone (continent) name from IDs
             var serverName = getServerName(metagameEventJson.world_id);
             var zoneName = getZoneName(metagameEventJson.zone_id);
@@ -62,16 +63,15 @@ amqp.connect(connectionUri, function (error, connection) {
                 body: `On continent ${zoneName}.`
             };
             // Output push notification object
-            console.log(pushNotification);
+            logger.info(pushNotification);
             // Get matching Notify documents from MongoDB
             Notify.find({ servers: metagameEventJson.world_id }, function (error, notifyDocuments) {
                 if (error) {
-                    // Log error to console
-                    console.error(`An error occurred finding Notify documents from MongoDB: ${error}`);
+                    logger.error(`Failed to find notify document from MongoDB: ${error}`);
                     return;
                 }
-                // Output number matching documents
-                console.log(`Matching documents found: ${notifyDocuments.length}`);
+                // Output number of matching documents
+                logger.info(`Matching documents found: ${notifyDocuments.length}`);
                 // Successfully found matching documents, iterate over each document using the subscription data to send a push notification
                 for (let doc = 0; doc < notifyDocuments.length; doc++) {
                     // Send push notification
@@ -83,11 +83,11 @@ amqp.connect(connectionUri, function (error, connection) {
                     This will tell the push service to attempt delivery of the push notification for 5 minutes, if it is never delivered, discard it
                     The default is 4 weeks!
                     */
-                    console.log(`Sending push notification to endpoint: ${notifyDocuments[doc].subscription.endpoint}`);
+                    logger.info(`Sending push notification to endpoint: ${notifyDocuments[doc].subscription.endpoint}`);
                     webpush.sendNotification(notifyDocuments[doc].subscription, JSON.stringify(pushNotification), { TTL: 300 })
-                        .catch(pushError => console.log(`An error occurred sending push notification. Status code: ${pushError.statusCode}, Body: ${pushError.body}, Headers: ${pushError.headers}`));
+                        .catch(pushError => logger.error(pushError.body, `Failed to send push notification - ${pushError.statusCode}`));
                 }
-                console.log(`Push notification sent to ${notifyDocuments.length} subscribers for MetagameEvent with ID: ${metagameEventJson.instance_id}`);
+                logger.info(`Push notification sent to ${notifyDocuments.length} subscribers for MetagameEvent with ID: ${metagameEventJson.instance_id}`);
             });
         });
     });
