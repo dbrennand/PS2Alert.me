@@ -48,7 +48,6 @@ amqp.connect(connectionUri, function (error, connection) {
         logger.info(`Waiting for messages (MetagameEvents) from RabbitMQ queue: ${queue}.`);
         // Callback function for when RabbitMQ pushes messages to the consumer
         channel.consume(queue, function (message) {
-            logger.info(`Message received: ${message.content}`);
             // Acknowledge the message
             channel.ack(message);
             // Parse MetagameEvent JSON
