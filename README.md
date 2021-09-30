@@ -54,7 +54,7 @@ The project has several components:
 
 4. Publisher (Backend):
 
-    - Connects to the Planetside 2 WebSocket Event Stream and listens for *MetagameEvents*. When a *MetagameEvent* matching the [criteria](https://github.com/dbrennand/PS2Alert.me/blob/v1/backend/publisher/publisher.mjs#L50) occurs, the publisher sends the *MetagameEvent* to the queue.
+    - Connects to the Planetside 2 WebSocket Event Stream and listens for *MetagameEvents*. When a *MetagameEvent* matching the [criteria](https://github.com/dbrennand/PS2Alert.me/blob/v2/backend/publisher/publisher.mjs#L53) occurs, the publisher sends the *MetagameEvent* to the queue.
 
 5. Consumer (Backend):
 
