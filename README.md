@@ -60,6 +60,10 @@ The project has several components:
 
     - Watches the RabbitMQ queue for *MetagameEvents*. When a *MetagameEvent* occurs in the queue, find all Notify documents that are subscribed to push notifications for the server which the *MetagameEvent* is occurring on and send a push notification to each.
 
+The following image provides a high level overview of the PS2Alert.me components and how they interact with one another to send a push notification.
+
+![](images/ps2alertmediagram.png)
+
 ### How does PS2Alert.me send a push notification and what data is collected?
 
 The process of subscribing to push notifications is as follows:
@@ -88,10 +92,6 @@ The process of subscribing to push notifications is as follows:
     > Once steps 1-3 have occurred, the PS2Alert.me webpage can be closed. The beauty of the Service Worker is that it awakes when it receives a push notification from the push service (as long as the browser is running).
 
 4. When an alert occurs for a server, all users subscribed to push notifications for that server are sent a push notification. The PS2Alert.me consumer is responsible for sending the push notification to the push service, which handles delivery of the notification to the user's browser.
-
-The following image provides a high level overview of the PS2Alert.me components and how they interact with one another to send a push notification.
-
-![](images/ps2alertmediagram.png)
 
 The images below (from [Google Developers](https://developers.google.com/web/fundamentals/push-notifications/how-push-works)) provide a graphical representation of how a push notification is sent to a push service and handled by a Service Worker.
 
