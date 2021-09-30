@@ -28,7 +28,7 @@ Browser notifications for Planetside 2 alerts.
 
 * [ps2census](https://github.com/microwavekonijn/ps2census)
 
-* [Winston](https://github.com/winstonjs/winston)
+* [Pino](https://github.com/pinojs/pino)
 
 ## Introduction
 
