@@ -89,6 +89,10 @@ The process of subscribing to push notifications is as follows:
 
 4. When an alert occurs for a server, all users subscribed to push notifications for that server are sent a push notification. The PS2Alert.me consumer is responsible for sending the push notification to the push service, which handles delivery of the notification to the user's browser.
 
+The following image provides a high level overview of the PS2Alert.me components and how they interact with one another to send a push notification.
+
+![](images/ps2alertmediagram.png)
+
 The images below (from [Google Developers](https://developers.google.com/web/fundamentals/push-notifications/how-push-works)) provide a graphical representation of how a push notification is sent to a push service and handled by a Service Worker.
 
 ![](https://developers.google.com/web/fundamentals/push-notifications/images/svgs/server-to-push-service.svg)
