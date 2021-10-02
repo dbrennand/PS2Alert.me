@@ -70,7 +70,7 @@ amqp.connect(connectionUri, function (error, connection) {
                     return;
                 }
                 // Output number of matching documents
-                logger.info(`Matching documents found: ${notifyDocuments.length}`);
+                logger.info(`${notifyDocuments.length} matching documents found.`);
                 // Successfully found matching documents, iterate over each document using the subscription data to send a push notification
                 for (let doc = 0; doc < notifyDocuments.length; doc++) {
                     // Send push notification
