@@ -28,7 +28,7 @@ const csrfProtection = csurf({
 // Setup Express server
 const app = express();
 // Configure Pino logger
-app.use(pino({ logger: logger, autoLogging: false }));
+app.use(pino({ logger: logger, autoLogging: false, quietReqLogger: true }));
 // Parse JSON
 app.use(express.json());
 // Configure cookie parser
