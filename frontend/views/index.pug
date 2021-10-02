@@ -26,12 +26,11 @@ html(lang='en')
 		.d-flex.flex-column.min-vh-100.justify-content-center.align-items-center
 			h1.display-4.fw-bold 🚨PS2Alert.me
 			p.text-center.fs-5
-				| Select the PlanetSide 2 server(s) (hold CTRL to select multiple) to subscribe to
-				| alert
-				| notifications for and press the subscribe button. When prompted, allow notifications.
+				| Select the PlanetSide 2 server(s) (hold CTRL to select multiple) to subscribe to alert
+				| notifications for and press subscribe. When prompted, allow notifications.
 			form
 				.mb-3
-					select#server-select.form-select.fs-5(multiple)
+					select#server-select.form-select.fs-5(multiple size='5')
 						// https://ps2.fisu.pw/api/territory/
 						option(value='1') Connery
 						option(value='10') Miller
