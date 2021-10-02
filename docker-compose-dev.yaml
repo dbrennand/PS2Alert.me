@@ -27,7 +27,7 @@ services:
     build:
       context: ./backend
       dockerfile: $PWD/backend/publisher/Dockerfile
-    image: publisher:1
+    image: publisher:2
     container_name: publisher
     environment:
       - RABBIT_CONNECTION_URI=${RABBIT_CONNECTION_URI}
@@ -39,7 +39,7 @@ services:
     build:
       context: ./backend
       dockerfile: $PWD/backend/consumer/Dockerfile
-    image: consumer:1
+    image: consumer:2
     container_name: consumer
     environment:
       - PUBLICVAPIDKEY=${PUBLICVAPIDKEY}
@@ -55,7 +55,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ps2alertme:1
+    image: ps2alertme:2
     container_name: PS2AlertMe
     environment:
       - MONGO_CONNECTION_URI=${MONGO_CONNECTION_URI}
