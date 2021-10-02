@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Custom imports and model
 import database from './config/database.mjs';
+import logger from './config/logger.mjs';
 import Notify from './models/notifyModel.mjs';
 
 // Function to sanitise input to mitigate against query selector injection attacks in NoSQL
@@ -27,17 +28,7 @@ const csrfProtection = csurf({
 // Setup Express server
 const app = express();
 // Configure Pino logger
-app.use(pino(
-  {
-    ignore: 'pid,hostname',
-    autoLogging: false,
-    formatters: {
-      level: (label) => {
-        return { level: label };
-      }
-    }
-  }
-));
+app.use(pino({ logger: logger, autoLogging: false }));
 // Parse JSON
 app.use(express.json());
 // Configure cookie parser
@@ -120,7 +111,10 @@ app.post('/add-subscription', csrfProtection, async (req, res) => {
       res.sendStatus(500);
       return;
     }
-    req.log.info(`Successfully added Notify document to MongoDB: ${doc}`);
+    req.log.info({
+      endpoint: doc.subscription.endpoint,
+      servers: doc.servers
+    }, 'Successfully added Notify document to MongoDB.');
     // Successfully created resource HTTP status code
     res.sendStatus(201);
   });
