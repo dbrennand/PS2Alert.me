@@ -2,8 +2,8 @@
 import pino from 'pino-http';
 import sanitize from 'mongo-sanitize';
 import express from 'express';
-import csurf from 'csurf';
 import cookieParser from 'cookie-parser';
+import csurf from 'csurf';
 import helmet from 'helmet';
 // Fix for __dirname: https://github.com/nodejs/help/issues/2907#issuecomment-757446568
 import path from 'path';
@@ -22,7 +22,22 @@ async function sanitiseInput(input) {
 
 // Setup route middleware for CSRF
 const csrfProtection = csurf({
-  cookie: true
+  // https://github.com/expressjs/csurf#cookie
+  cookie: {
+    // Sign the cookie using the COOKIE_SECRET when in production
+    signed: process.env.NODE_ENV === 'production' ? true : false,
+    // Set cookie as secure when production
+    // Can only be sent over a HTTPS connection
+    secure: process.env.NODE_ENV === 'production' ? true : false,
+    // One day in seconds
+    maxAge: 24 * 60 * 60,
+    // Make the cookie inaccessible in the client's Javascript
+    httpOnly: true,
+    // Declare if cookies should be restricted to a first-party or same-site context
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
+    // true when production, otherwise false
+    sameSite: process.env.NODE_ENV === 'production' ? true : false
+  }
 })
 
 // Setup Express server
@@ -32,20 +47,7 @@ app.use(pino({ logger: logger, autoLogging: false, quietReqLogger: true }));
 // Parse JSON
 app.use(express.json());
 // Configure cookie parser
-app.use(cookieParser(process.env.COOKIE_SECRET, {
-  // https://www.npmjs.com/package/cookie#options-1
-  // One day in seconds
-  maxAge: 24 * 60 * 60,
-  // Make the cookie inaccessible in the client's Javascript
-  httpOnly: true,
-  // Declare if cookies should be restricted to a first-party or same-site context
-  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
-  // true when production, otherwise false
-  sameSite: process.env.NODE_ENV === 'production' ? true : false,
-  // Set cookie as secure when production
-  // Can only be sent over a HTTPS connection
-  secure: process.env.NODE_ENV === 'production' ? true : false
-}));
+app.use(cookieParser(process.env.COOKIE_SECRET));
 // Use Helmet to set useful security defaults
 app.use(
   helmet({
