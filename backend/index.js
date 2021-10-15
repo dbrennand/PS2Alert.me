@@ -128,9 +128,9 @@ app.delete('/remove-subscription', csrfProtection, async (req, res) => {
   // Sanitise req.body.endpoint to mitigate against query selector injection attacks
   const cleanEndpoint = await sanitiseInput(req.body.endpoint);
   req.log.info(`Deleting Notify document matching the endpoint: ${cleanEndpoint}`);
-  // Remove Notify object containing the matching endpoint
+  // Remove Notify document containing the matching endpoint
   await Notify.where().findOneAndDelete({
-    "subscription.endpoint": { $eq: cleanEndpoint }
+    'subscription.endpoint': { $eq: cleanEndpoint }
   }, { rawResult: false }, async function (error, doc) {
     if (error) {
       // Log error and return HTTP error status code
@@ -142,6 +142,29 @@ app.delete('/remove-subscription', csrfProtection, async (req, res) => {
     // Successfully deleted resource HTTP status code
     res.sendStatus(200);
   }
+  );
+});
+
+// /edit-subscription API route
+app.patch('/edit-subscription', async (req, res) => {
+  req.log.info(res.body, `Subscription edit received.`);
+  // Sanitise req.body to mitigate against query selector injection attacks
+  const cleanBody = await sanitiseInput(req.body);
+  req.log.info(`Editing Notify document matching the old endpoint: ${cleanBody.oldEndpoint}`);
+  // Edit Notify document matching the old endpoint
+  await Notify.findOneAndUpdate({ 'subscription.endpoint': { $eq: cleanBody.oldEndpoint } },
+    { subscription: cleanBody.newSubscription }, { new: true, rawResult: false },
+    async function (error, doc) {
+      if (error) {
+        // Log error and return HTTP error status code
+        req.log.error(`Failed to edit Notify document matching the old endpoint ${cleanBody.oldEndpoint}: ${error}`);
+        res.sendStatus(500);
+        return;
+      };
+      req.log.info(doc, `Successfully edited Notify document matching the old endpoint ${cleanBody.oldEndpoint}`);
+      // Successfully edited resource HTTP status code
+      res.sendStatus(200);
+    }
   );
 });
 
