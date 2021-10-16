@@ -134,11 +134,11 @@ app.delete('/remove-subscription', csrfProtection, async (req, res) => {
   }, { rawResult: false }, async function (error, doc) {
     if (error) {
       // Log error and return HTTP error status code
-      req.log.error(`Failed to delete Notify document matching the endpoint ${cleanEndpoint} from MongoDB: ${error}`);
+      req.log.error(`Failed to delete Notify document matching the endpoint: ${cleanEndpoint} from MongoDB: ${error}`);
       res.sendStatus(500);
       return;
     };
-    req.log.info(`Successfully deleted Notify document matching the endpoint ${doc.subscription.endpoint} from MongoDB.`);
+    req.log.info(`Successfully deleted Notify document matching the endpoint: ${doc.subscription.endpoint} from MongoDB.`);
     // Successfully deleted resource HTTP status code
     res.sendStatus(200);
   }
@@ -152,16 +152,20 @@ app.patch('/edit-subscription', async (req, res) => {
   const cleanBody = await sanitiseInput(req.body);
   req.log.info(`Editing Notify document matching the old endpoint: ${cleanBody.oldEndpoint}`);
   // Edit Notify document matching the old endpoint
-  await Notify.findOneAndUpdate({ 'subscription.endpoint': { $eq: cleanBody.oldEndpoint } },
+  await Notify.where().findOneAndUpdate({ 'subscription.endpoint': { $eq: cleanBody.oldEndpoint } },
     { subscription: cleanBody.newSubscription }, { new: true, rawResult: false },
     async function (error, doc) {
       if (error) {
         // Log error and return HTTP error status code
-        req.log.error(`Failed to edit Notify document matching the old endpoint ${cleanBody.oldEndpoint}: ${error}`);
+        req.log.error(`Failed to edit Notify document matching the old endpoint: ${cleanBody.oldEndpoint}: ${error}`);
         res.sendStatus(500);
         return;
       };
-      req.log.info(doc, `Successfully edited Notify document matching the old endpoint ${cleanBody.oldEndpoint}`);
+      req.log.info({
+        endpoint: doc.subscription.endpoint,
+        servers: doc.servers
+      },
+        `Successfully edited Notify document matching the old endpoint: ${cleanBody.oldEndpoint}`);
       // Successfully edited resource HTTP status code
       res.sendStatus(200);
     }
