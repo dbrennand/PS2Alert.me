@@ -13,7 +13,9 @@ export default async () => {
         await mongoose.connect(connectionUri, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            useCreateIndex: true
+            useCreateIndex: true,
+            // https://mongoosejs.com/docs/5.x/docs/deprecations.html#findandmodify
+            useFindAndModify: false
         });
         logger.info('Connected to MongoDB.');
     } catch (error) {
