@@ -78,6 +78,7 @@ const subscribeToPushNotifications = async () => {
         servers: servers,
         subscription: subscription
       };
+      console.log(`Subscription endpoint: ${data.subscription.endpoint}`);
       // Send subscription information to the backend API
       await fetch('/add-subscription', {
         credentials: 'same-origin',
