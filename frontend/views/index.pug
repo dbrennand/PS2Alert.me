@@ -24,6 +24,11 @@ html(lang='en')
 		// https://stackoverflow.com/questions/42252443/vertical-align-center-in-bootstrap
 		// Main page content
 		.d-flex.flex-column.min-vh-100.justify-content-center.align-items-center
+			div.alert.alert-warning(role='alert')
+				i.bi.bi-exclamation-triangle-fill
+				|  Some users may not be receiving notifications due to
+				a.text-decoration-none(href="https://github.com/dbrennand/PS2Alert.me/issues/3")  #3.
+				|  Please resubscribe for alert notifications.
 			h1.display-4.fw-bold 🚨PS2Alert.me
 			p.text-center.fs-5
 				| Select the PlanetSide 2 server(s) (hold CTRL to select multiple) to subscribe to alert
