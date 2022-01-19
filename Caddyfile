@@ -6,5 +6,8 @@
 # Handles serving PS2Alert.me over HTTPS with automatic cert renewal
 # Also, automatically redirects all HTTP traffic to HTTPS
 {$SITE_ADDRESS} {
+    tls {
+        dns cloudflare {$CLOUDFLARE_API_TOKEN}
+    }
     reverse_proxy PS2AlertMe:8080
 }

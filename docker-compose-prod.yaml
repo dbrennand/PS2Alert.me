@@ -46,7 +46,7 @@ services:
   PS2AlertMe:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: PS2AlertMeDockerfile
     image: ps2alertme:v2.1
     container_name: PS2AlertMe
     environment:
@@ -59,11 +59,15 @@ services:
       - 8080
     restart: unless-stopped
   caddy:
-    image: caddy:2.4.3-alpine
+    build:
+      context: .
+      dockerfile: CaddyDockerfile
+    image: caddy:ps2alertme
     container_name: caddy
     environment:
       - SITE_ADDRESS=${SITE_ADDRESS}
       - EMAIL=${EMAIL}
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
     networks:
       - frontend
       - backend
