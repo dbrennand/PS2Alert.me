@@ -115,7 +115,8 @@ function getZoneName(zoneID) {
         '4': 'Hossin',
         '6': 'Amerish',
         '8': 'Esamir',
-        '14': 'Koltyr'
+        '14': 'Koltyr',
+        '344': 'Oshur'
     };
     return zoneInfo[zoneID];
 };
