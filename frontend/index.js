@@ -99,7 +99,7 @@ const subscribeToPushNotifications = async () => {
 
 // Logic for when a user presses the unsubscribe button
 // Unsubscribe from push notifications
-const unsubscribeToPushNotifications = async () => {
+const unsubscribeFromPushNotifications = async () => {
   console.log('Getting registration to unsubscribe from push notifications.');
   // Get registration
   await navigator.serviceWorker.getRegistration()
@@ -130,7 +130,7 @@ const unsubscribeToPushNotifications = async () => {
 
 // Add event listeners for subscribe and unsubscribe events
 document.getElementById('subscribebutton').addEventListener('click', subscribeToPushNotifications);
-document.getElementById('unsubscribebutton').addEventListener('click', unsubscribeToPushNotifications);
+document.getElementById('unsubscribebutton').addEventListener('click', unsubscribeFromPushNotifications);
 
 // Show Bootstrap modal for cookie
 const cookieModalEl = document.getElementById('cookiemodal');
