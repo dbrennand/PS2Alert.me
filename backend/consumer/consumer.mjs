@@ -84,7 +84,7 @@ amqp.connect(connectionUri, function (error, connection) {
                     */
                     logger.info(`Sending push notification to endpoint: ${notifyDocuments[doc].subscription.endpoint}`);
                     webpush.sendNotification(notifyDocuments[doc].subscription, JSON.stringify(pushNotification), { TTL: 300 })
-                        .catch(pushError => logger.error(pushError.body, `Failed to send push notification - ${pushError.statusCode}`));
+                        .catch(pushError => logger.error(JSON.stringify(pushError)));
                 }
                 logger.info(`Push notification sent to ${notifyDocuments.length} subscribers for MetagameEvent with ID: ${metagameEventJson.instance_id}`);
             });
