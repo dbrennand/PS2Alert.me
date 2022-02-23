@@ -118,10 +118,10 @@ const unsubscribeFromPushNotifications = async () => {
           'CSRF-Token': getCsrfToken()
         }
       });
-      console.log('Unsubscribing from push notifications.')
+      console.log('Unsubscribing from push notifications.');
       await subscription.unsubscribe();
       // Finally, remove Service Worker
-      console.log('Removing Service Worker.')
+      console.log('Removing Service Worker.');
       await registration.unregister();
       console.log('Successfully unsubscribed from push notifications.');
       setSubscribeMessage();
