@@ -73,6 +73,12 @@ const subscribeToPushNotifications = async () => {
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
       });
+      // Send message to the Service Worker (sw.js) to save the subscription
+      console.log('Sending message to Service Worker.');
+      registration.active.postMessage({
+        action: 'SAVE_SUBSCRIPTION',
+        subscription: JSON.stringify(subscription)
+      });
       // Create object containing selected server(s) and subscription data
       const data = {
         servers: servers,
@@ -107,8 +113,13 @@ const unsubscribeFromPushNotifications = async () => {
       // Get current subscription
       console.log('Getting subscription to unsubscribe from push notifications.');
       const subscription = await registration.pushManager.getSubscription();
+      // Send message to the Service Worker (sw.js) to delete the subscription
+      console.log('Sending message to Service Worker.');
+      registration.active.postMessage({
+        action: 'DELETE_SUBSCRIPTION'
+      });
       // Send backend API request to unsubscribe from push notifications
-      console.log('Removing subscription.')
+      console.log('Removing subscription.');
       await fetch('/remove-subscription', {
         credentials: 'same-origin',
         method: 'DELETE',
