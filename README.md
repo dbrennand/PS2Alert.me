@@ -72,11 +72,17 @@ The following image provides a high level overview of the PS2Alert.me components
 
 The process of subscribing to push notifications is as follows:
 
-1. A [Service Worker](frontend/sw.js) is registered in the browser. The Service Worker is responsible for handling incoming push notifications from a push service. Each browser has its own push service.
+1. A [Service Worker](frontend/sw.js) is registered in the browser. The Service Worker is responsible for:
+
+    - Saving subscription data in the browser (more on this below).
+
+    - Handling incoming push notifications from a push service. Each browser has its own push service.
 
 2. The chosen server(s) are retrieved and a [subscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription) is created. The subscription contains an endpoint and encryption keys for sending a push notification securely.
 
-3. The chosen server(s) and subscription data are then sent to PS2Alert.me in JSON format (see example below):
+3. The subscription data is saved in the browser using IndexedDB to handle future subscription updates. Details on this can be found in [#3](https://github.com/dbrennand/PS2Alert.me/issues/3#issuecomment-1048830172).
+
+4. The chosen server(s) and subscription data are then sent to PS2Alert.me in JSON format (see example below):
 
     ```
     {
@@ -95,7 +101,7 @@ The process of subscribing to push notifications is as follows:
     >
     > Once steps 1-3 have occurred, the PS2Alert.me webpage can be closed. The beauty of the Service Worker is that it awakes when it receives a push notification from the push service (as long as the browser is running).
 
-4. When an alert occurs for a server, all users subscribed to push notifications for that server are sent a push notification. The PS2Alert.me consumer is responsible for sending the push notification to the push service, which handles delivery of the notification to the user's browser.
+5. When an alert occurs for a server, all users subscribed to push notifications for that server are sent a push notification. The PS2Alert.me consumer is responsible for sending the push notification to the push service, which handles delivery of the notification to the user's browser.
 
 The images below (from [Google Developers](https://developers.google.com/web/fundamentals/push-notifications/how-push-works)) provide a graphical representation of how a push notification is sent to a push service and handled by a Service Worker.
 
