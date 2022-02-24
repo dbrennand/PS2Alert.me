@@ -145,28 +145,28 @@ app.delete('/remove-subscription', csrfProtection, async (req, res) => {
   );
 });
 
-// /edit-subscription API route
-app.patch('/edit-subscription', async (req, res) => {
-  req.log.info(res.body, `Subscription edit received.`);
+// /update-subscription API route
+app.patch('/update-subscription', async (req, res) => {
+  req.log.info(res.body, 'Subscription update received.');
   // Sanitise req.body to mitigate against query selector injection attacks
   const cleanBody = await sanitiseInput(req.body);
-  req.log.info(`Editing Notify document matching the old endpoint: ${cleanBody.oldEndpoint}`);
-  // Edit Notify document matching the old endpoint
-  await Notify.where().findOneAndUpdate({ 'subscription.endpoint': { $eq: cleanBody.oldEndpoint } },
+  req.log.info(`Updating Notify document matching the old endpoint: ${cleanBody.oldSubscription.endpoint}`);
+  // Update Notify document matching the old endpoint
+  await Notify.where().findOneAndUpdate({ 'subscription.endpoint': { $eq: cleanBody.oldSubscription.endpoint } },
     { subscription: cleanBody.newSubscription }, { new: true, rawResult: false },
     async function (error, doc) {
       if (error) {
         // Log error and return HTTP error status code
-        req.log.error(`Failed to edit Notify document matching the old endpoint: ${cleanBody.oldEndpoint}: ${error}`);
+        req.log.error(`Failed to update Notify document matching the old endpoint: ${cleanBody.oldSubscription.endpoint}: ${error}`);
         res.sendStatus(500);
         return;
       };
       req.log.info({
-        endpoint: doc.subscription.endpoint,
-        servers: doc.servers
+        endpoint: doc._doc.subscription.endpoint,
+        servers: doc._doc.servers
       },
-        `Successfully edited Notify document matching the old endpoint: ${cleanBody.oldEndpoint}`);
-      // Successfully edited resource HTTP status code
+        `Successfully updated Notify document matching the old endpoint: ${cleanBody.oldSubscription.endpoint}`);
+      // Successfully updated resource HTTP status code
       res.sendStatus(200);
     }
   );
