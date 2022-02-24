@@ -68,7 +68,7 @@ The following image provides a high level overview of the PS2Alert.me components
 
 ![](images/ps2alertmediagram.png)
 
-### How does PS2Alert.me send a push notification and what data is collected?
+### How does PS2Alert.me send a push notification and what data is stored/collected?
 
 The process of subscribing to push notifications is as follows:
 
