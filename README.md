@@ -96,7 +96,7 @@ The process of subscribing to push notifications is as follows:
 
     > [!NOTE]
     >
-    > Once steps 1-3 have occurred, the PS2Alert.me webpage can be closed. The beauty of the Service Worker is that it awakes when it receives a push notification from the push service (as long as the browser is running).
+    > Once steps 1-4 have occurred, the PS2Alert.me webpage can be closed. The beauty of the Service Worker is that it awakes when it receives a push notification from the push service (as long as the browser is running).
 
 5. When an alert occurs for a server, all users subscribed to push notifications for that server are sent a push notification. The PS2Alert.me consumer is responsible for sending the push notification to the push service, which handles delivery of the notification to the user's browser.
 
