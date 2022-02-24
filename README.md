@@ -30,6 +30,10 @@ Browser notifications for PlanetSide 2 alerts.
 
 * [Pino](https://github.com/pinojs/pino)
 
+### Service Worker
+
+* [idb-keyval](https://github.com/jakearchibald/idb-keyval)
+
 ## Introduction
 
 PS2Alert.me allows a user to receive push notifications for PlanetSide 2 alerts in their browser. The application achieves this by leveraging [Service Workers](https://developers.google.com/web/fundamentals/primers/service-workers), the [IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API), [Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API), [Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API) and [Push Services](https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications#push_notification_terms).
