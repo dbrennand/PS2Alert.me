@@ -1,6 +1,6 @@
 {
   "name": "ps2alert.me",
-  "version": "1.0.0",
+  "version": "2.2.0",
   "type": "module",
   "description": "Browser notifications for Planetside 2 alerts.",
   "main": "backend/index.js",
