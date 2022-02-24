@@ -84,16 +84,15 @@ The process of subscribing to push notifications is as follows:
 
 4. The chosen server(s) and subscription data are then sent to PS2Alert.me in JSON format (see example below):
 
-    ```
-    {
-    subscription: {
-        keys: {
-        auth: 'Ma--_fi1qKbIkRR-BWdjaL',
-        p256dh: 'ALazAmWPKHJgS5RIpUTrokhJ-2F36BgtS4yHJ2i5wYFM12Rw5Dq6JgN0MZS-5XAtzOkA0fjd82_qDZ13u9R_ki0'
+    ```json
+    {"subscription": {
+        "keys": {
+            "auth": "Ma--_fi1qKbIkRR-BWdjaL",
+            "p256dh": "ALazAmWPKHJgS5RIpUTrokhJ-2F36BgtS4yHJ2i5wYFM12Rw5Dq6JgN0MZS-5XAtzOkA0fjd82_qDZ13u9R_ki0"
         },
-        endpoint: 'https://updates.push.services.mozilla.com/wpush/v2/gADADABg7aLCNwpbXma7Xkx5Oy90BY_yfChS4GXeb8fKPAb5nAi77iRqPdljCA0hX_6ADgaShrAL0CQTwqzqCXLhROWNRH0ddTIn7Eb29o-2Zt13zEHGKlULC5VqOuWGgdXWbH8bEUX38jABy4APmgudRM4uiiJI2FjCWnWdo56-WQnC5EauYAM'
+        "endpoint": "https://updates.push.services.mozilla.com/wpush/v2/gADADABg7aLCNwpbXma7Xkx5Oy90BY_yfChS4GXeb8fKPAb5nAi77iRqPdljCA0hX_6ADgaShrAL0CQTwqzqCXLhROWNRH0ddTIn7Eb29o-2Zt13zEHGKlULC5VqOuWGgdXWbH8bEUX38jABy4APmgudRM4uiiJI2FjCWnWdo56-WQnC5EauYAM"
     },
-    servers: [ '13' ],
+    "servers": [ "13" ],
     }
     ```
 
