@@ -3,11 +3,30 @@
  * Licensed under the GNU GENERAL PUBLIC LICENSE
 */
 
+// Public VAPID key
+const publicVapidKey = "";
+
 // Import idb-keyval library: https://github.com/jakearchibald/idb-keyval#all-bundles
 // Idb-keyval creates a IndexedDB database with simple operations such as `get` and `set`
 self.importScripts('https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js');
 
 // Service Worker functions
+
+// Function taken from: https://www.npmjs.com/package/web-push#using-vapid-key-for-applicationserverkey
+const urlBase64ToUint8Array = (base64String) => {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+};
 
 // Function to handle setting subscription
 const setSubscription = async (subscription) => {
@@ -22,21 +41,23 @@ const deleteSubscription = async () => {
 // Code inspiration from: https://medium.com/@madridserginho/how-to-handle-webpush-api-pushsubscriptionchange-event-in-modern-browsers-6e47840d756f
 const updateSubscription = async () => {
     const oldSubscription = JSON.parse(await idbKeyval.get('subscription'));
-    const newSubscription = await self.registration.pushManager.getSubscription();
-    if (newSubscription.endpoint != oldSubscription.endpoint) {
-        console.log('Subscription endpoints do not match. Updating subscription.');
-        // Set new subscription
-        await setSubscription(newSubscription);
-        // Update subscription on the server
-        await fetch('/update-subscription', {
-            method: 'PATCH',
-            body: JSON.stringify({
-                oldSubscription: oldSubscription,
-                newSubscription: newSubscription
-            }),
-            headers: { 'Content-Type': 'application/json' }
-        });
-    };
+    // Create a new subscription
+    const newSubscription = await self.registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+    });
+    console.log('Updating subscription.');
+    // Set new subscription
+    await setSubscription(newSubscription);
+    // Update subscription on the server
+    await fetch('/update-subscription', {
+        method: 'PATCH',
+        body: JSON.stringify({
+            oldSubscription: oldSubscription,
+            newSubscription: newSubscription
+        }),
+        headers: { 'Content-Type': 'application/json' }
+    });
 };
 
 // Service Worker listeners
