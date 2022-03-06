@@ -48,7 +48,7 @@ const updateSubscription = async () => {
     });
     console.log('Updating subscription.');
     // Set new subscription
-    await setSubscription(newSubscription);
+    await setSubscription(JSON.stringify(newSubscription));
     // Update subscription on the server
     await fetch('/update-subscription', {
         method: 'PATCH',
