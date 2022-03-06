@@ -122,7 +122,7 @@ The project stack can be deployed locally using [Docker](https://www.docker.com/
 
 4. Modify the [.env](.env) file providing all environment variables.
 
-5. Modify [frontend/index.js](frontend/index.js#L2) `const publicVapidKey = "";` with your generated VAPID public key.
+5. Modify [frontend/index.js](frontend/index.js#L2) and [frontend/sw.js](frontend/sw.js#L7) `const publicVapidKey = "";` with your generated VAPID public key.
 
 ## Deployment
 
