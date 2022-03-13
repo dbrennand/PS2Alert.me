@@ -14,8 +14,8 @@ export default async () => {
       useFindAndModify: false,
     })
     .then(logger.info("Connected to MongoDB."))
-    .catch((error) => {
-      logger.error(`Failed to connect to MongoDB: ${error}`);
+    .catch((err) => {
+      logger.error(JSON.stringify(err), "Failed to connect to MongoDB.");
       process.exit(1);
     });
 };
