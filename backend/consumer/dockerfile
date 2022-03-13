@@ -2,7 +2,7 @@ FROM node:16-alpine
 
 WORKDIR /usr/src/app
 
-RUN npm install amqplib@0.8.0 web-push@3.4.5 mongoose@5.13.9 pino@next
+RUN npm install amqplib@0.8.0 web-push@3.4.5 mongoose@6.2.6 pino@next
 
 COPY --chown=node:node consumer/consumer.mjs .
 COPY --chown=node:node config/ ./config
