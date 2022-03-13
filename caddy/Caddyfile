@@ -1,0 +1,10 @@
+{
+    email {$EMAIL}
+    admin off
+}
+{$SITE_ADDRESS} {
+    tls {
+        dns cloudflare {$CLOUDFLARE_API_TOKEN}
+    }
+    reverse_proxy PS2AlertMe:8080
+}

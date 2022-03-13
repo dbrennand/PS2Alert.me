@@ -61,7 +61,7 @@ services:
   caddy:
     build:
       context: .
-      dockerfile: CaddyDockerfile
+      dockerfile: $PWD/caddy/dockerfile
     image: caddy:ps2alertme
     container_name: caddy
     environment:
@@ -76,7 +76,7 @@ services:
       - 443:443
     volumes:
       - caddy-data:/data
-      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
     depends_on:
       - rabbitmq
       - publisher
