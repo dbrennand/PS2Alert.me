@@ -1,125 +1,131 @@
-// Import required libraries
-import amqp from 'amqplib/callback_api.js';
-import webpush from 'web-push';
-// Custom imports and model
-import database from './config/database.mjs';
-import logger from './config/logger.mjs';
-import Notify from './models/notifyModel.mjs';
+import amqplib from "amqplib";
+import webpush from "web-push";
+import database from "./config/database.mjs";
+import logger from "./config/logger.mjs";
+import Notify from "./models/notify.mjs";
+
+/**
+ * Get a PlanetSide 2 server (world) name from an ID.
+ * @param {string} serverID The server ID.
+ * @returns {string} The name of the server.
+ */
+function getServerName(serverID) {
+  // Server IDs and names: https://ps2.fisu.pw/api/territory/
+  const serverInfo = {
+    1: "Connery",
+    10: "Miller",
+    13: "Cobalt",
+    17: "Emerald",
+    40: "SolTech",
+  };
+  return serverInfo[serverID];
+}
+
+/**
+ * Get a PlanetSide 2 zone (continent) name from an ID
+ * @param {string} zoneID The zone ID.
+ * @returns {string} The name of the zone.
+ */
+function getZoneName(zoneID) {
+  // Zone (continent) IDs and names: https://ps2.fisu.pw/api/territory/
+  const zoneInfo = {
+    2: "Indar",
+    4: "Hossin",
+    6: "Amerish",
+    8: "Esamir",
+    14: "Koltyr",
+    344: "Oshur",
+  };
+  return zoneInfo[zoneID];
+}
+
+const connectionUri = process.env.RABBITMQ_CONNECTION_URI;
+const queue = "MetagameEvent";
+const publicVapidKey = process.env.CONSUMER_PUBLIC_VAPIDKEY;
+const privateVapidKey = process.env.CONSUMER_PRIVATE_VAPIDKEY;
+const contactEmail = process.env.CONSUMER_CONTACT_EMAIL;
+webpush.setVapidDetails(contactEmail, publicVapidKey, privateVapidKey);
 
 // Connect to MongoDB
-database();
+await database();
 
-// Setup webpush vapid details
-const publicVapidKey = process.env.PUBLICVAPIDKEY;
-const privateVapidKey = process.env.PRIVATEVAPIDKEY;
-const contactEmail = process.env.CONTACTEMAIL;
-webpush.setVapidDetails(
-    contactEmail,
-    publicVapidKey,
-    privateVapidKey,
-);
-
-// Get RabbitMQ connection URI
-const connectionUri = process.env.RABBIT_CONNECTION_URI;
-
-// Connect to RabbitMQ
-logger.info('Connecting to RabbitMQ.');
-amqp.connect(connectionUri, function (error, connection) {
-    if (error) {
-        // Log error and exit
-        logger.error(`Failed to connect to RabbitMQ: ${error}`);
-        process.exit(1);
-    };
-    // Create a new channel
-    logger.info('Creating a new channel.');
-    connection.createChannel(function (error, channel) {
-        if (error) {
-            logger.error(`Failed to create a new channel to RabbitMQ: ${error}`);
-            connection.close();
-            process.exit(1);
-        };
-        // Declare name of queue
-        var queue = 'MetagameEvent';
-
-        // Wait for the Queue to exist before consuming messages
-        channel.assertQueue(queue, {
-            durable: true
-        });
-        logger.info(`Waiting for messages (MetagameEvents) from RabbitMQ queue: ${queue}.`);
-        // Callback function for when RabbitMQ pushes messages to the consumer
-        channel.consume(queue, function (message) {
-            // Acknowledge the message
-            channel.ack(message);
-            // Parse MetagameEvent JSON
-            var metagameEventJson = JSON.parse(message.content);
-            logger.info(metagameEventJson, 'Parsed MetagameEvent JSON.');
-            // Get server (world) name and zone (continent) name from IDs
-            var serverName = getServerName(metagameEventJson.world_id);
-            var zoneName = getZoneName(metagameEventJson.zone_id);
-            // Create push notification object
-            var pushNotification = {
-                title: `${serverName}: Alert started!`,
-                body: `On continent ${zoneName}.`
-            };
-            // Output push notification object
-            logger.info(pushNotification);
-            // Get matching Notify documents from MongoDB
-            Notify.find({ servers: metagameEventJson.world_id }, function (error, notifyDocuments) {
-                if (error) {
-                    logger.error(`Failed to find notify document from MongoDB: ${error}`);
-                    return;
-                }
-                // Output number of matching documents
-                logger.info(`${notifyDocuments.length} matching documents found.`);
-                // Successfully found matching documents, iterate over each document using the subscription data to send a push notification
-                for (let doc = 0; doc < notifyDocuments.length; doc++) {
-                    // Send push notification
-                    /*
-                    https://github.com/web-push-libs/web-push#input
-                    Set the time to live (TTL) option to 5 minutes (300 seconds)
-                    TTL describes how long the push notification is retained by the push service
-                    User's shouldn't receive a push notification for an alert that happened ages in the past
-                    This will tell the push service to attempt delivery of the push notification for 5 minutes, if it is never delivered, discard it
-                    The default is 4 weeks!
-                    */
-                    logger.info(`Sending push notification to endpoint: ${notifyDocuments[doc].subscription.endpoint}`);
-                    webpush.sendNotification(notifyDocuments[doc].subscription, JSON.stringify(pushNotification), { TTL: 300 })
-                        .catch(pushError => {
-                            logger.error(`Failed to send push notification for endpoint: ${notifyDocuments[doc].subscription.endpoint}`);
-                            logger.error(JSON.stringify(pushError));
-                        });
-                }
-                logger.info(`Push notification sent to ${notifyDocuments.length} subscribers for MetagameEvent with ID: ${metagameEventJson.instance_id}`);
-            });
+logger.info("Connecting to RabbitMQ.");
+amqplib
+  .connect(connectionUri)
+  .then((conn) => {
+    logger.info("Connection established. Creating channel.");
+    return conn.createChannel();
+  })
+  .then((chan) => {
+    logger.info(`Channel established. Asserting queue: ${queue}`);
+    return chan.assertQueue(queue, { durable: true });
+  })
+  .then((_) => {
+    logger.info(
+      `Waiting for messages (MetagameEvents) from RabbitMQ queue: ${queue}`
+    );
+    return chan.consume(queue, (msg) => {
+      chan.ack(msg);
+      var metagameEventJson = JSON.parse(msg.content);
+      logger.info(metagameEventJson, "Parsed MetagameEvent.");
+      var serverName = getServerName(metagameEventJson.world_id);
+      var zoneName = getZoneName(metagameEventJson.zone_id);
+      var payload = {
+        title: `${serverName}: Alert started!`,
+        body: `On continent ${zoneName}.`,
+      };
+      // Get matching Notify documents from MongoDB
+      Notify.find({
+        servers: metagameEventJson.world_id,
+      })
+        .then((notifyDocuments) => {
+          logger.info(
+            `Found ${notifyDocuments.length} matching Notify document(s).`
+          );
+          for (let doc = 0; doc < notifyDocuments.length; doc++) {
+            // Send push notification
+            /*
+                https://github.com/web-push-libs/web-push#input
+                Set the time to live (TTL) option to 5 minutes (300 seconds)
+                TTL describes how long the push notification is retained by the push service
+                Users shouldn't receive a push notification for an alert that happened ages in the past
+                This will tell the push service to attempt delivery of the push notification for 5 minutes, if it is never delivered, discard it
+                The default is 4 weeks!
+                */
+            logger.info(
+              `Sending push notification to endpoint: ${notifyDocuments[doc].subscription.endpoint}`
+            );
+            webpush
+              .sendNotification(
+                notifyDocuments[doc].subscription,
+                JSON.stringify(payload),
+                { TTL: 300 }
+              )
+              .then((res) => {
+                logger.info(
+                  JSON.stringify(res),
+                  `Push notification sent to endpoint: ${notifyDocuments[doc].subscription.endpoint}`
+                );
+              })
+              .catch((err) => {
+                logger.error(
+                  JSON.stringify(err),
+                  `Failed to send push notification to endpoint: ${notifyDocuments[doc].subscription.endpoint}`
+                );
+              });
+          }
+        })
+        .catch((err) => {
+          logger.error(
+            JSON.stringify(err),
+            "Failed to find matching Notify document(s)."
+          );
         });
     });
-});
-
-// Function to get a Planetside 2 server (world) name from an ID
-function getServerName(serverID) {
-    // Server IDs and names: https://ps2.fisu.pw/api/territory/
-    // Declare object containing server IDs and names
-    const serverInfo = {
-        '1': 'Connery',
-        '10': 'Miller',
-        '13': 'Cobalt',
-        '17': 'Emerald',
-        '40': 'SolTech',
-    };
-    return serverInfo[serverID];
-};
-
-// Function to get a Planetside 2 zone (continent) name from an ID
-function getZoneName(zoneID) {
-    // Zone (continent) IDs and names: https://ps2.fisu.pw/api/territory/
-    // Declare object containing zone (continent) IDs and names
-    const zoneInfo = {
-        '2': 'Indar',
-        '4': 'Hossin',
-        '6': 'Amerish',
-        '8': 'Esamir',
-        '14': 'Koltyr',
-        '344': 'Oshur'
-    };
-    return zoneInfo[zoneID];
-};
+  })
+  .catch((err) => {
+    logger.error(
+      JSON.stringify(err),
+      `An error occurred whilst consuming messages from RabbitMQ queue: ${queue}`
+    );
+  });
