@@ -26,7 +26,7 @@ services:
   publisher:
     build:
       context: ./backend
-      dockerfile: $PWD/backend/publisher/Dockerfile
+      dockerfile: $PWD/backend/publisher/dockerfile
     image: publisher:v3.0
     container_name: publisher
     environment:
@@ -38,7 +38,7 @@ services:
   consumer:
     build:
       context: ./backend
-      dockerfile: $PWD/backend/consumer/Dockerfile
+      dockerfile: $PWD/backend/consumer/dockerfile
     image: consumer:v3.0
     container_name: consumer
     environment:
@@ -54,7 +54,7 @@ services:
   PS2AlertMe:
     build:
       context: .
-      dockerfile: PS2AlertMeDockerfile
+      dockerfile: dockerfile
     image: ps2alertme:v3.0
     container_name: PS2AlertMe
     environment:
