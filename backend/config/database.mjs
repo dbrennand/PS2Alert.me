@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import logger from "./logger.mjs";
 
-const connectionUri = process.env.MONGO_CONNECTION_URI;
+const connectionUri = process.env.MONGODB_CONNECTION_URI;
 
 // Connect to MongoDB
 export default async () => {

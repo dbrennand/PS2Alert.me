@@ -30,8 +30,8 @@ services:
     image: publisher:v3.0
     container_name: publisher
     environment:
-      - RABBIT_CONNECTION_URI=${RABBIT_CONNECTION_URI}
-      - SERVICEID=${SERVICEID}
+      - RABBITMQ_CONNECTION_URI=${RABBITMQ_CONNECTION_URI}
+      - PUBLISHER_SERVICEID=${PUBLISHER_SERVICEID}
     depends_on:
       - rabbitmq
     restart: unless-stopped
@@ -44,9 +44,9 @@ services:
     environment:
       - CONSUMER_PUBLIC_VAPIDKEY=${CONSUMER_PUBLIC_VAPIDKEY}
       - CONSUMER_PRIVATE_VAPIDKEY=${CONSUMER_PRIVATE_VAPIDKEY}
-      - CONTACT_EMAIL=${CONTACT_EMAIL}
-      - RABBIT_CONNECTION_URI=${RABBIT_CONNECTION_URI}
-      - MONGO_CONNECTION_URI=${MONGO_CONNECTION_URI}
+      - CONSUMER_CONTACT_EMAIL=${CONSUMER_CONTACT_EMAIL}
+      - RABBITMQ_CONNECTION_URI=${RABBITMQ_CONNECTION_URI}
+      - MONGODB_CONNECTION_URI=${MONGODB_CONNECTION_URI}
     depends_on:
       - rabbitmq
       - db
@@ -58,7 +58,7 @@ services:
     image: ps2alertme:v3.0
     container_name: PS2AlertMe
     environment:
-      - MONGO_CONNECTION_URI=${MONGO_CONNECTION_URI}
+      - MONGODB_CONNECTION_URI=${MONGODB_CONNECTION_URI}
       - COOKIE_SECRET=${COOKIE_SECRET}
       - NODE_ENV=development
     ports:

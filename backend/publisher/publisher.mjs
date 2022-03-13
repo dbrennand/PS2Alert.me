@@ -6,7 +6,7 @@ const { CensusClient, Events } = census;
 import logger from './config/logger.mjs';
 
 // Get RabbitMQ connection URI
-const connectionUri = process.env.RABBIT_CONNECTION_URI;
+const connectionUri = process.env.RABBITMQ_CONNECTION_URI;
 
 // Connect to RabbitMQ
 logger.info('Connecting to RabbitMQ.');
@@ -18,7 +18,7 @@ const channel = await connection.createChannel();
 
 // Get Planetside 2 Census API service ID
 // Used by the ps2census client
-const serviceID = process.env.SERVICEID;
+const serviceID = process.env.PUBLISHER_SERVICEID;
 
 // Declare ps2census subscription object
 const subscriptions = {
