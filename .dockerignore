@@ -2,6 +2,5 @@
 .git*
 .env
 **/node_modules
-# Ignore consumer and publisher dirs and files from PS2Alert.me container build
 */consumer*
 */publisher*
