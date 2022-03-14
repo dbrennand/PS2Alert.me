@@ -60,7 +60,7 @@ amqplib
     logger.info(`Channel established. Asserting queue: ${queue}`);
     return chan.assertQueue(queue, { durable: true });
   })
-  .then((_) => {
+  .then(() => {
     logger.info(
       `Waiting for messages (MetagameEvents) from RabbitMQ queue: ${queue}`
     );
