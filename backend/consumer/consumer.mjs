@@ -116,16 +116,12 @@ amqplib
           }
         })
         .catch((err) => {
-          logger.error(
-            JSON.stringify(err),
-            "Failed to find matching Notify document(s)."
-          );
+          logger.error(`Failed to find matching Notify document(s): ${err}`);
         });
     });
   })
   .catch((err) => {
     logger.error(
-      JSON.stringify(err),
-      `An error occurred whilst consuming messages from RabbitMQ queue: ${queue}`
+      `An error occurred whilst consuming messages from RabbitMQ queue: ${queue}: ${err}`
     );
   });
