@@ -3,7 +3,7 @@
   "version": "3.0.0",
   "type": "module",
   "description": "Browser notifications for Planetside 2 alerts.",
-  "main": "backend/index.js",
+  "main": "backend/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

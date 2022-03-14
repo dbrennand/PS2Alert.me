@@ -12,4 +12,4 @@ EXPOSE 8080
 
 USER node
 
-CMD ["node", "backend/index.js"]
+CMD ["node", "backend/server.js"]
