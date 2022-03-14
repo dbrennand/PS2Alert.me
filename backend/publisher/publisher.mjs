@@ -1,89 +1,119 @@
-// Import required libraries
-import amqp from 'amqplib';
-import census from 'ps2census';
-const { CensusClient, Events } = census;
-// Custom import
-import logger from './config/logger.mjs';
+import amqplib from "amqplib";
+import census from "ps2census";
+import logger from "./config/logger.mjs";
 
-// Get RabbitMQ connection URI
+const queue = "MetagameEvent";
 const connectionUri = process.env.RABBITMQ_CONNECTION_URI;
+logger.info("Connecting to RabbitMQ.");
+const conn = await amqplib.connect(connectionUri);
+logger.info("Connection established. Creating channel.");
+const chan = await conn.createChannel();
+await chan.assertQueue(queue, { durable: true });
 
-// Connect to RabbitMQ
-logger.info('Connecting to RabbitMQ.');
-const connection = await amqp.connect(connectionUri);
+/**
+ * Publish a MetagameEvent to the RabbitMQ queue.
+ * @param {amqplib.Channel} chan The RabbitMQ channel.
+ * @param {ps2census.Events.PS2_META_EVENT.raw} metaGameEvent The JSON representation of a PS2_META_EVENT.
+ */
+async function publishToQueue(chan, metaGameEvent) {
+  logger.info(
+    metaGameEvent,
+    `Publishing MetagameEvent with ID: ${metaGameEvent.instance_id} to the queue: ${queue}`
+  );
+  chan.sendToQueue(queue, Buffer.from(JSON.stringify(metaGameEvent)));
+}
 
-// Create a new channel
-logger.info('Creating a new channel.');
-const channel = await connection.createChannel();
-
-// Get Planetside 2 Census API service ID
-// Used by the ps2census client
+const { CensusClient, Events } = census;
 const serviceID = process.env.PUBLISHER_SERVICEID;
-
-// Declare ps2census subscription object
-const subscriptions = {
-    // Connery, Miller, Cobalt, Emerald, SolTech
-    worlds: ['1', '10', '13', '17', '40'],
-    characters: ['all'],
-    eventNames: ['MetagameEvent'],
-    logicalAndCharactersWithWorlds: true,
-};
-
-// Declare Planetside 2 zones (continents)
 // Zone (continent) IDs and names: https://ps2.fisu.pw/api/territory/
 // Indar, Hossin, Amerish, Esamir, Koltyr, Oshur
-const zones = ['2', '4', '6', '8', '14', '344']
-
-// Initalise ps2census event stream client
-const client = new CensusClient(serviceID, 'ps2', {
-    streamManager: {
-        subscription: subscriptions
-    },
-});
-
-// Define client behaviour(s)
-client.on('ready', () => { logger.info('Client ready and listening for MetagameEvents.'); }); // Client is ready
-client.on('reconnecting', () => { logger.info('Client reconnecting.'); }); // Client is reconnecting
-client.on('disconnected', () => { logger.warn('Client disconnected.'); }); // Client got disconnected
-client.on('duplicate', (dupe) => { logger.warn(`A duplicate event occurred whilst listening for MetagameEvents: ${dupe}`); }); // Duplicate, when a duplicate event has been received
-client.on('error', (error) => { logger.error(`An error occurred whilst listening for MetagameEvents: ${error}`); }); // Error
-client.on('warn', (warn) => { logger.warn(`A warning occurred whilst listening for MetagameEvents: ${warn}`); }); // Warning, when receiving a corrupt message
-client.on(Events.PS2_META_EVENT, async (metagameEvent) => {
-    // Check MetagameEvent is in a started state and the zone is in the zones array
-    if (metagameEvent.metagame_event_state_name === 'started' && zones.includes(metagameEvent.zone_id)) {
-        // MetagameEvent is in a started state and is for a recognised zone (continent)
-        logger.info(metagameEvent.raw, `MetagameEvent with ID: ${metagameEvent.instance_id} meets criteria. Sending to queue.`);
-        await sendtoQueue(channel, metagameEvent.raw);
-    } else {
-        logger.info(metagameEvent.raw, `MetagameEvent with ID: ${metagameEvent.instance_id} doesn't meet the criteria.`);
-        return;
-    };
-});
-
-// Function to send MetagameEvent to the RabbitMQ queue
-async function sendtoQueue(channel, metagameEvent) {
-    // Declare name of the queue
-    var queue = 'MetagameEvent';
-    // Create queue
-    // NOTE: Does nothing if the queue already exists
-    await channel.assertQueue(queue, {
-        durable: true
-    });
-    // Send MetagameEvent to the queue
-    try {
-        logger.info(metagameEvent, `Sending MetagameEvent with ID: ${metagameEvent.instance_id} to the queue: ${queue}`);
-        await channel.sendToQueue(queue, Buffer.from(JSON.stringify(metagameEvent)));
-        logger.info(metagameEvent, `Successfully sent MetagameEvent with ID: ${metagameEvent.instance_id} to the queue: ${queue}`);
-    } catch (error) {
-        logger.error(metagameEvent, `Failed to send MetagameEvent with ID: ${metagameEvent.instance_id} to the queue: ${queue}\n${error}`);
-    };
+const zones = ["2", "4", "6", "8", "14", "344"];
+const subscriptions = {
+  // Connery, Miller, Cobalt, Emerald, SolTech
+  worlds: ["1", "10", "13", "17", "40"],
+  characters: ["all"],
+  eventNames: ["MetagameEvent"],
+  logicalAndCharactersWithWorlds: true,
 };
+const client = new CensusClient(serviceID, "ps2", {
+  streamManager: {
+    subscription: subscriptions,
+  },
+});
 
-// Configure 5 minute interval to rerun all subscriptions to the websocket API
-// This is to ensure our connection doesn't go stale causing loss of events
-setInterval(async function (client) {
-    logger.info('Rerun all subscriptions.');
-    await client.resubscribe();
-}, 300000, client);
+client.on("ready", () => {
+  logger.info("Client ready and listening for MetagameEvents.");
+});
+client.on("reconnecting", () => {
+  logger.info("Client reconnecting.");
+});
+client.on("disconnected", () => {
+  logger.warn("Client disconnected.");
+});
+client.on("duplicate", (dupe) => {
+  logger.warn(
+    JSON.stringify(dupe),
+    "A duplicate event occurred whilst listening for MetagameEvents."
+  );
+});
+client.on("error", (err) => {
+  logger.error(
+    JSON.stringify(err),
+    "An error occurred whilst listening for MetagameEvents."
+  );
+});
+client.on("warn", (warn) => {
+  logger.warn(
+    JSON.stringify(warn),
+    "A warning occurred whilst listening for MetagameEvents."
+  );
+});
+client.on(Events.PS2_META_EVENT, async (metaGameEvent) => {
+  if (
+    metaGameEvent.metagame_event_state_name === "started" &&
+    zones.includes(metaGameEvent.zone_id)
+  ) {
+    logger.info(
+      metaGameEvent.raw,
+      `MetagameEvent with ID: ${metaGameEvent.instance_id} meets criteria. Publishing to queue: ${queue}`
+    );
+    publishToQueue(chan, metaGameEvent.raw)
+      .then(() => {
+        logger.info(
+          metaGameEvent.raw,
+          `Successfully published MetagameEvent with ID: ${metaGameEvent.instance_id} to the queue: ${queue}`
+        );
+      })
+      .catch((err) => {
+        logger.error(
+          `Failed to publish MetagameEvent with ID: ${metaGameEvent.instance_id} to the queue: ${queue}: ${err}`
+        );
+      });
+  } else {
+    logger.info(
+      metaGameEvent.raw,
+      `MetagameEvent with ID: ${metaGameEvent.instance_id} does not meet the criteria.`
+    );
+  }
+});
+
+/**
+ * Configure 5 minute interval to rerun subscriptions to the websocket API
+ * to ensure our connection doesn't go stale causing loss of events.
+ */
+setInterval(
+  async (client) => {
+    client
+      .resubscribe()
+      .then(() => {
+        logger.info("Rerun subscriptions.");
+      })
+      .catch((err) => {
+        logger.error(`Failed to rerun subscriptions: ${err}`);
+      });
+  },
+  300000,
+  client
+);
 
 client.watch();
