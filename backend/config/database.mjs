@@ -6,16 +6,12 @@ const connectionUri = process.env.MONGODB_CONNECTION_URI;
 // Connect to MongoDB
 export default async () => {
   await mongoose
-    .connect(connectionUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true,
-      // https://mongoosejs.com/docs/5.x/docs/deprecations.html#findandmodify
-      useFindAndModify: false,
+    .connect(connectionUri)
+    .then(() => {
+      logger.info("Connected to MongoDB.");
     })
-    .then(logger.info("Connected to MongoDB."))
     .catch((err) => {
-      logger.error(JSON.stringify(err), "Failed to connect to MongoDB.");
+      logger.error(`Failed to connect to MongoDB: ${err}`);
       process.exit(1);
     });
 };
