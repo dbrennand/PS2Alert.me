@@ -12,10 +12,13 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Function to sanitise input to mitigate against query selector injection attacks in NoSQL
-async function sanitiseInput(input) {
-  var cleanInput = sanitize(input);
-  return cleanInput;
+/**
+ * Sanitise input to mitigate against query selector injection attacks in NoSQL
+ * @param {express.Request.body} input The express.Request.body to sanitise.
+ * @returns {string} A sanitised copy of express.Request.body.
+ */
+async function sanitiseBody(input) {
+  return await sanitize(input);
 };
 
 // Setup route middleware for CSRF
