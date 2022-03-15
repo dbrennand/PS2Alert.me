@@ -12,47 +12,15 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/**
- * Sanitise input to mitigate against query selector injection attacks in NoSQL
- * @param {express.Request.body} input The express.Request.body to sanitise.
- * @returns {string} A sanitised copy of express.Request.body.
- */
-async function sanitiseBody(input) {
-  return await sanitize(input);
-};
-
-// Setup route middleware for CSRF
-const csrfProtection = csurf({
-  // https://github.com/expressjs/csurf#cookie
-  cookie: {
-    // Sign the cookie using the COOKIE_SECRET when in production
-    signed: process.env.NODE_ENV === 'production' ? true : false,
-    // Set cookie as secure when production
-    // Can only be sent over a HTTPS connection
-    secure: process.env.NODE_ENV === 'production' ? true : false,
-    // One day in seconds
-    maxAge: 24 * 60 * 60,
-    // Make the cookie inaccessible in the client's Javascript
-    httpOnly: true,
-    // Declare if cookies should be restricted to a first-party or same-site context
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
-    // true when production, otherwise false
-    sameSite: process.env.NODE_ENV === 'production' ? true : false
-  }
-})
-
-// Setup Express server
 const app = express();
-// Configure Pino logger
 app.use(pino({ logger: logger, autoLogging: false, quietReqLogger: true }));
-// Parse JSON
 app.use(express.json());
-// Configure cookie parser
 app.use(cookieParser(process.env.COOKIE_SECRET));
-// Use Helmet to set useful security defaults
+// Serve JS assets at /
+app.use('/', express.static(path.join(__dirname, '../frontend')));
 app.use(
+  // https://github.com/helmetjs/helmet#reference
   helmet({
-    // https://github.com/helmetjs/helmet#reference
     // Use defaults for Content Security Policy (CSP) apart from specific directives
     contentSecurityPolicy: {
       useDefaults: true,
@@ -85,17 +53,39 @@ app.use(
     xssFilter: true
   })
 );
-
-// Set views directory
 app.set('views', path.join(__dirname, '../frontend/views'));
-// Set template engine as pug
 app.set('view engine', 'pug');
-// Serve Javascript assets at /
-app.use('/', express.static(path.join(__dirname, '../frontend')));
 
-// PS2Alert.me / route
+const csrfProtection = csurf({
+  // https://github.com/expressjs/csurf#cookie
+  cookie: {
+    // Sign the cookie using the COOKIE_SECRET when in production
+    signed: process.env.NODE_ENV === 'production' ? true : false,
+    // Set cookie as secure when production
+    // Can only be sent over a HTTPS connection
+    secure: process.env.NODE_ENV === 'production' ? true : false,
+    // One day in seconds
+    maxAge: 24 * 60 * 60,
+    // Make the cookie inaccessible in the client's JavaScript
+    httpOnly: true,
+    // Declare if cookies should be restricted to a first-party or same-site context
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
+    // true when production, otherwise false
+    sameSite: process.env.NODE_ENV === 'production' ? true : false
+  }
+})
+
+/**
+ * Sanitise input to mitigate against query selector injection attacks in NoSQL
+ * @param {express.Request.body} input The express.Request.body to sanitise.
+ * @returns {string} A sanitised copy of express.Request.body.
+ */
+async function sanitiseBody(input) {
+  return await sanitize(input);
+};
+
+// PS2Alert.me routes
 app.get('/', csrfProtection, async (req, res) => {
-  // Provide the CSRF token to the index view
   res.render('index', { csrfToken: req.csrfToken() });
 });
 
