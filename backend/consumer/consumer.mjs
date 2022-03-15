@@ -125,4 +125,5 @@ amqplib
     logger.error(
       `An error occurred whilst consuming messages from RabbitMQ queue: ${queue}: ${err}`
     );
+    process.exit(1);
   });
