@@ -1,18 +1,16 @@
-// Import required libraries
 import pino from 'pino-http';
 import sanitize from 'mongo-sanitize';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import csurf from 'csurf';
 import helmet from 'helmet';
+import database from './config/database.mjs';
+import logger from './config/logger.mjs';
+import Notify from './models/notify.mjs';
 // Fix for __dirname: https://github.com/nodejs/help/issues/2907#issuecomment-757446568
 import path from 'path';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Custom imports and model
-import database from './config/database.mjs';
-import logger from './config/logger.mjs';
-import Notify from './models/notifyModel.mjs';
 
 // Function to sanitise input to mitigate against query selector injection attacks in NoSQL
 async function sanitiseInput(input) {
