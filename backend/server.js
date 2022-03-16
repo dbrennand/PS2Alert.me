@@ -29,17 +29,20 @@ app.use(
         "script-src": [
           "'self'",
           "https://ps2alert.me",
-          "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js",
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js",
           "https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js",
         ],
         "img-src": [
           "'self'",
+          // Allow Bootstrap 5 SVGs: https://github.com/twbs/bootstrap/issues/25394
+          "data:",
           "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/",
         ],
         "style-src": [
           "'self'",
-          "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css",
-          "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css",
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css",
+          "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css",
+          "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css",
         ],
         "upgrade-insecure-requests": [],
       },
