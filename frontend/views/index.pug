@@ -22,23 +22,34 @@ html(lang='en')
 							| <a href='https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html'> Cross Site Request Forgery.</a>
 							| By using this website, you consent to the use of this cookie.
 		// Main content
-		.d-flex.flex-column.min-vh-100.justify-content-center.align-items-center.text-white.animate__animated.animate__fadeIn
-			h1.display-5.fw-bold 🚨PS2Alert.me
-			.card.bg-danger
-				.card-header <i class="bi bi-check2-square"></i> Server Selection
-				.card-body
-					.form-check.form-switch
-						input#connery.form-check-input(type='checkbox' role='switch' value='1')
-						label.form-check-label(for='connery') Connery
-					.form-check.form-switch
-						input#miller.form-check-input(type='checkbox' role='switch' value='10')
-						label.form-check-label(for='miller') Miller
-					.form-check.form-switch
-						input#cobalt.form-check-input(type='checkbox' role='switch' value='13')
-						label.form-check-label(for='cobalt') Cobalt
-					.form-check.form-switch
-						input#emerald.form-check-input(type='checkbox' role='switch' value='17')
-						label.form-check-label(for='emerald') Emerald
-					.form-check.form-switch
-						input#soltech.form-check-input(type='checkbox' role='switch' value='40')
-						label.form-check-label(for='soltech') SolTech
+		.d-flex.flex-column.min-vh-100.justify-content-center.align-items-center.text-light.animate__animated.animate__fadeIn
+			h1.display-5.pb-3.mb-4.border-bottom.fw-bold 🚨PS2Alert.me
+			.card.bg-secondary
+				.card-header.text-center <i class="bi bi-check2-square"></i> Server Selection
+				.container.pt-2
+					.row
+						.col
+							.form-check
+								input#connery.form-check-input(type='checkbox' value='1')
+								label.form-check-label(for='connery') Connery
+						.col
+							.form-check
+								input#miller.form-check-input(type='checkbox' value='10')
+								label.form-check-label(for='miller') Miller
+						.col
+							.form-check
+								input#cobalt.form-check-input(type='checkbox' value='13')
+								label.form-check-label(for='cobalt') Cobalt
+						.col
+							.form-check
+								input#emerald.form-check-input(type='checkbox' value='17')
+								label.form-check-label(for='emerald') Emerald
+						.col
+							.form-check
+								input#soltech.form-check-input(type='checkbox' value='40')
+								label.form-check-label(for='soltech') SolTech
+					.row.py-2.text-center
+						.col
+							button#subscribe.btn.btn-primary.mt-auto(type='button') Subscribe 🔔
+							| &nbsp;
+							button#unsubscribe.btn.btn-warning.mt-auto(type='button') Unsubscribe 🔕
