@@ -29,7 +29,7 @@ app.use(
         "script-src": [
           "'self'",
           "https://ps2alert.me",
-          "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js",
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js",
           "https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js",
         ],
         "img-src": [
