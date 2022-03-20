@@ -34,7 +34,7 @@ function getCsrfToken() {
 /**
  * Set subscription status based on whether the user has an active subscription.
  */
-async function setSubscriptionStatus() {
+function setSubscriptionStatus() {
   console.log("Setting subscription status.");
   const subscribedElement = document.getElementById("subscribed");
   const unsubscribedElement = document.getElementById("unsubscribed");
@@ -94,14 +94,14 @@ async function subscribeToPushNotifications() {
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
           })
-          .then((subscription) => {
+          .then(async (subscription) => {
             // Send message to the Service Worker to save the subscription
             registration.active.postMessage({
               action: "SAVE_SUBSCRIPTION",
               subscription: JSON.stringify(subscription),
             });
             console.log(`Subscription endpoint: ${subscription.endpoint}`);
-            fetch("/api/post-subscription", {
+            await fetch("/api/post-subscription", {
               credentials: "same-origin",
               method: "POST",
               body: JSON.stringify({
@@ -142,12 +142,12 @@ async function unsubscribeFromPushNotifications() {
       );
       registration.pushManager
         .getSubscription()
-        .then((subscription) => {
+        .then(async (subscription) => {
           // Send message to the Service Worker to delete the subscription
           registration.active.postMessage({ action: "DELETE_SUBSCRIPTION" });
           console.log("Unsubscribing from push notifications.");
-          subscription.unsubscribe();
-          fetch("/api/delete-subscription", {
+          await subscription.unsubscribe();
+          await fetch("/api/delete-subscription", {
             credentials: "same-origin",
             method: "DELETE",
             body: JSON.stringify({ endpoint: subscription.endpoint }),
@@ -156,7 +156,7 @@ async function unsubscribeFromPushNotifications() {
               "CSRF-Token": getCsrfToken(),
             },
           });
-          registration.unregister();
+          await registration.unregister();
           setSubscriptionStatus();
         })
         .catch((err) => {
