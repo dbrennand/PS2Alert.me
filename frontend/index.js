@@ -75,55 +75,56 @@ async function subscribeToPushNotifications() {
   // Check if Service Workers are supported for the browser
   if ("serviceWorker" in navigator) {
     console.log("Registering Service Worker.");
-    navigator.serviceWorker
-      .register("/sw.js", { scope: "/" })
-      .then((registration) => {
-        console.log("Service Worker registration successful.");
-        // Get selected PlanetSide 2 servers
-        const checkedServers = [
-          ...document.querySelectorAll("input:checked"),
-        ].map((check) => check.value);
-        if (!checkedServers.length) {
-          console.error(
-            "Check at least one PlanetSide 2 server to subscribe to push notification for."
-          );
-          return;
-        }
-        console.log(`PlanetSide 2 server IDs selected: ${checkedServers}`);
-        console.log("Subscribing to push notifications.");
-        registration.pushManager
-          .subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-          })
-          .then(async (subscription) => {
-            // Send message to the Service Worker to save the subscription
-            registration.active.postMessage({
-              action: "SAVE_SUBSCRIPTION",
-              subscription: JSON.stringify(subscription),
-            });
-            console.log(`Subscription endpoint: ${subscription.endpoint}`);
-            await fetch("/api/post-subscription", {
-              credentials: "same-origin",
-              method: "POST",
-              body: JSON.stringify({
-                servers: checkedServers,
-                subscription: subscription,
-              }),
-              headers: {
-                "Content-Type": "application/json",
-                "CSRF-Token": getCsrfToken(),
-              },
-            });
-            setSubscriptionStatus();
-          })
-          .catch((err) => {
-            console.error(`Failed to subscribe to push notifications: ${err}`);
+    navigator.serviceWorker.register("/sw.js", { scope: "/" }).then((_) => {
+      return navigator.serviceWorker.ready;
+    })
+    .then((registration) => {
+      console.log("Service Worker registration successful.");
+      // Get selected PlanetSide 2 servers
+      const checkedServers = [
+        ...document.querySelectorAll("input:checked"),
+      ].map((check) => check.value);
+      if (!checkedServers.length) {
+        console.error(
+          "Check at least one PlanetSide 2 server to subscribe to push notification for."
+        );
+        return;
+      }
+      console.log(`PlanetSide 2 server IDs selected: ${checkedServers}`);
+      console.log("Subscribing to push notifications.");
+      registration.pushManager
+        .subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+        })
+        .then(async (subscription) => {
+          // Send message to the Service Worker to save the subscription
+          registration.active.postMessage({
+            action: "SAVE_SUBSCRIPTION",
+            subscription: JSON.stringify(subscription),
           });
-      })
-      .catch((err) => {
-        console.error(`Service Worker registration failed: ${err}`);
-      });
+          console.log(`Subscription endpoint: ${subscription.endpoint}`);
+          await fetch("/api/post-subscription", {
+            credentials: "same-origin",
+            method: "POST",
+            body: JSON.stringify({
+              servers: checkedServers,
+              subscription: subscription,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+              "CSRF-Token": getCsrfToken(),
+            },
+          });
+          setSubscriptionStatus();
+        })
+        .catch((err) => {
+          console.error(`Failed to subscribe to push notifications: ${err}`);
+        });
+    })
+    .catch((err) => {
+      console.error(`Service Worker registration failed: ${err}`);
+    });
   } else {
     console.error("Browser does not support Service Workers.");
     alert(
