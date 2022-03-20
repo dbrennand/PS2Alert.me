@@ -1,95 +1,107 @@
 /**
  * https://ps2alert.me Service Worker
  * Licensed under the GNU GENERAL PUBLIC LICENSE
-*/
+ */
+// https://github.com/jakearchibald/idb-keyval#all-bundles
+// idb-keyval creates a IndexedDB database with `get` and `set` operations
+self.importScripts("https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js");
 
-// Public VAPID key
 const publicVapidKey = "";
 
-// Import idb-keyval library: https://github.com/jakearchibald/idb-keyval#all-bundles
-// Idb-keyval creates a IndexedDB database with simple operations such as `get` and `set`
-self.importScripts('https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js');
+/**
+ * Function taken from https://www.npmjs.com/package/web-push#using-vapid-key-for-applicationserverkey
+ * @param {string} base64String A base64 string.
+ * @returns A Uint8Array.
+ */
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, "+")
+    .replace(/_/g, "/");
 
-// Service Worker functions
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
 
-// Function taken from: https://www.npmjs.com/package/web-push#using-vapid-key-for-applicationserverkey
-const urlBase64ToUint8Array = (base64String) => {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-        .replace(/\-/g, '+')
-        .replace(/_/g, '/');
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
 
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
+/**
+ * Set the subscription in IndexedDB.
+ * @param subscription The JSON representation of a PushSubscription object.
+ */
+async function setSubscription(subscription) {
+  await idbKeyval.set("subscription", subscription);
+}
 
-    for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-};
+/**
+ * Delete the subscription in IndexedDB.
+ */
+async function deleteSubscription() {
+  await idbKeyval.del("subscription");
+}
 
-// Function to handle setting subscription
-const setSubscription = async (subscription) => {
-    await idbKeyval.set('subscription', subscription);
-};
-
-const deleteSubscription = async () => {
-    await idbKeyval.del('subscription');
-};
-
-// Function to handle updating subscription
-// Code inspiration from: https://medium.com/@madridserginho/how-to-handle-webpush-api-pushsubscriptionchange-event-in-modern-browsers-6e47840d756f
-const updateSubscription = async () => {
-    const oldSubscription = JSON.parse(await idbKeyval.get('subscription'));
-    // Create a new subscription
-    const newSubscription = await self.registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-    });
-    console.log('Updating subscription.');
-    // Set new subscription
-    await setSubscription(JSON.stringify(newSubscription));
-    // Update subscription on the server
-    await fetch('/update-subscription', {
-        method: 'PATCH',
+/**
+ * Update subscription when a pushsubscriptionchange is fired.
+ */
+async function updateSubscription() {
+  const oldSubscription = JSON.parse(await idbKeyval.get("subscription"));
+  // Create a new subscription
+  self.registration.pushManager
+    .subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+    })
+    .then((newSubscription) => {
+      console.log("Updating subscription.");
+      setSubscription(JSON.stringify(newSubscription));
+      fetch("/api/patch-subscription", {
+        method: "PATCH",
         body: JSON.stringify({
-            oldSubscription: oldSubscription,
-            newSubscription: newSubscription
+          oldSubscription: oldSubscription,
+          newSubscription: newSubscription,
         }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
+      });
+    })
+    .catch((err) => {
+      console.error(`Failed to update subscription: ${err}`);
     });
-};
+}
 
-// Service Worker listeners
-
-// Listener for saving and deleting subscription
-self.addEventListener('message', (event) => {
-    if (event.data.action === 'SAVE_SUBSCRIPTION') {
-        console.log('Saving subscription.');
-        event.waitUntil(setSubscription(event.data.subscription));
-    }
-    else if (event.data.action === 'DELETE_SUBSCRIPTION') {
-        console.log('Deleting subscription.');
-        event.waitUntil(deleteSubscription());
-    };
+/**
+ * Post message event listener.
+ */
+self.addEventListener("message", (event) => {
+  if (event.data.action === "SAVE_SUBSCRIPTION") {
+    console.log("Saving subscription.");
+    event.waitUntil(setSubscription(event.data.subscription));
+  } else if (event.data.action === "DELETE_SUBSCRIPTION") {
+    console.log("Deleting subscription.");
+    event.waitUntil(deleteSubscription());
+  }
 });
 
-// Listener for push subscription change
-// Update old subscription with the new subscription
-// https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope/pushsubscriptionchange_event
-self.addEventListener('pushsubscriptionchange', (event) => {
-    console.log('Subscription change fired.');
-    event.waitUntil(updateSubscription());
+/**
+ * https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope/pushsubscriptionchange_event
+ * Pushsubscriptionchange event listener.
+ */
+self.addEventListener("pushsubscriptionchange", (event) => {
+  console.log("Subscription change fired. Updating subscription.");
+  event.waitUntil(updateSubscription());
 });
 
-// Listener for push events
-self.addEventListener('push', (event) => {
-    // Convert event data to JSON
-    const data = event.data.json();
-    // Show push notification
-    self.registration.showNotification(data.title, {
-        body: data.body,
-        vibrate: [200, 100, 200, 100, 200],
-        icon: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/microsoft/209/police-cars-revolving-light_1f6a8.png',
-    });
+/**
+ * Push notification event listener.
+ */
+self.addEventListener("push", (event) => {
+  const data = event.data.json();
+  // Show push notification
+  self.registration.showNotification(data.title, {
+    body: data.body,
+    vibrate: [200, 100, 200, 100, 200],
+    icon: "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/microsoft/209/police-cars-revolving-light_1f6a8.png",
+  });
 });
