@@ -2,7 +2,9 @@
 
 Browser notifications for PlanetSide 2 alerts.
 
-![PS2Alert.me](images/PS2AlertMe.png)
+<p align="center">
+  <img src="images/PS2AlertMe.png"/>
+</p>
 
 <p align="center">
   <img src="images/notification.png"/>
