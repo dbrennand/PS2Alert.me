@@ -16,7 +16,7 @@ const app = express();
 app.use(pino({ logger: logger, autoLogging: false, quietReqLogger: true }));
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
-// Serve JS assets at /
+// Serve JavaScript assets at /
 app.use("/", express.static(path.join(__dirname, "../frontend")));
 app.use(
   // https://github.com/helmetjs/helmet#reference
