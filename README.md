@@ -106,11 +106,11 @@ The images below (from [Google Developers](https://developers.google.com/web/fun
 
 ![](https://developers.google.com/web/fundamentals/push-notifications/images/svgs/push-service-to-sw-event.svg)
 
-## Development and Deployment
+## Development
 
 The project stack can be deployed locally using [Docker](https://www.docker.com/).
 
-## Deployment Prerequisites
+### Prerequisites
 
 1. A Daybreak Games Census API Service ID.
 
@@ -118,19 +118,29 @@ The project stack can be deployed locally using [Docker](https://www.docker.com/
 
 2. Node.js installed on your machine to perform step 3.
 
-3. Install [web-push](https://www.npmjs.com/package/web-push) to generate VAPID public and private keys using the command: `npx web-push generate-vapid-keys`
+3. Install [web-push](https://www.npmjs.com/package/web-push) to generate VAPID public and private keys:
+
+    ```bash
+    npx web-push generate-vapid-keys
+    ```
 
 4. Modify the [.env](.env) file providing all environment variables.
 
-5. Modify [frontend/index.js](frontend/index.js#L2) and [frontend/sw.js](frontend/sw.js#L7) `const publicVapidKey = "";` with your generated VAPID public key.
+5. Modify [frontend/index.js](frontend/index.js#L1) and [frontend/sw.js](frontend/sw.js#L9) `const publicVapidKey = "";` with your generated VAPID public key.
 
-## Deployment
+### Deploy
 
-Use the following steps to deploy the PS2Alert.me stack locally using Docker:
+1. Clone the repository:
 
-1. Clone the repository: `git clone https://github.com/dbrennand/PS2Alert.me.git && cd PS2Alert.me`
+    ```bash
+    git clone https://github.com/dbrennand/PS2Alert.me.git && cd PS2Alert.me
+    ```
 
-2. Bring up the project stack: `docker-compose -f docker-compose-dev.yaml up -d --build`
+2. Bring up the project stack:
+
+    ```
+    docker-compose -f docker-compose-dev.yaml up -d --build
+    ```
 
 The frontend will then be available at: http://localhost:8080
 
