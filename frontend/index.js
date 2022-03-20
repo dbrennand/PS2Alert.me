@@ -63,6 +63,8 @@ function setSubscriptionStatus() {
       }
       // Hide subscribed message
       subscribedElement.setAttribute("class", "d-none");
+      // Show unsubscribed message
+      unsubscribedElement.setAttribute("class", "");
     });
 }
 
