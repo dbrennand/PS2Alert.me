@@ -48,17 +48,17 @@ The project has several components:
 
 2. MongoDB (Backend):
 
-    - A user's chosen server(s) to subscribe to alert notifications for and subscription data (forming the [Notify model](backend/models/notifyModel.mjs)) are stored in the database.
+    - A user's chosen server(s) to subscribe to alert notifications for and subscription data (forming the [Notify model](backend/models/notify.mjs)) are stored in the database.
 
     - The web application and consumer interact with the database. Adding and removing Notify documents and retrieving them respectively.
 
 3. RabbitMQ (Backend):
 
-    - A messaging broker where *MetagameEvents* (alerts) are sent from the publisher (mentioned below) to a queue which is then consumed (by the consumer component).
+    - A messaging broker where *MetagameEvents* (alerts) are sent from the publisher to a queue which is then consumed.
 
 4. Publisher (Backend):
 
-    - Connects to the PlanetSide 2 WebSocket Event Stream and listens for *MetagameEvents*. When a *MetagameEvent* matching the [criteria](https://github.com/dbrennand/PS2Alert.me/blob/v2/backend/publisher/publisher.mjs#L53) occurs, the publisher sends the *MetagameEvent* to the queue.
+    - Connects to the PlanetSide 2 WebSocket Event Stream and listens for *MetagameEvents*. When a *MetagameEvent* has the property `started`, the publisher sends the *MetagameEvent* to the queue.
 
 5. Consumer (Backend):
 
@@ -76,13 +76,13 @@ The process of subscribing to push notifications is as follows:
 
     - Saving subscription data in the browser (more on this below).
 
-    - Handling incoming push notifications from a push service. Each browser has its own push service.
+    - Handling incoming push notifications from a push service.
 
 2. The chosen server(s) are retrieved and a [subscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription) is created. The subscription contains an endpoint and encryption keys for sending a push notification securely.
 
 3. The subscription data is saved in the browser using IndexedDB to handle future subscription updates. Details on this can be found in [#3](https://github.com/dbrennand/PS2Alert.me/issues/3#issuecomment-1048830172).
 
-4. The chosen server(s) and subscription data are then sent to PS2Alert.me in JSON format (see example below):
+4. The chosen server(s) and subscription data are then sent to PS2Alert.me in JSON format:
 
     ```json
     {"subscription": {
