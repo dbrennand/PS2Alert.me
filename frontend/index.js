@@ -1,12 +1,15 @@
-// Public VAPID key
 const publicVapidKey = "";
 
-// Function taken from: https://www.npmjs.com/package/web-push#using-vapid-key-for-applicationserverkey
-const urlBase64ToUint8Array = (base64String) => {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+/**
+ * Function taken from https://www.npmjs.com/package/web-push#using-vapid-key-for-applicationserverkey
+ * @param {string} base64String A base64 string.
+ * @returns A Uint8Array.
+ */
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/');
+    .replace(/\-/g, "+")
+    .replace(/_/g, "/");
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
@@ -15,137 +18,169 @@ const urlBase64ToUint8Array = (base64String) => {
     outputArray[i] = rawData.charCodeAt(i);
   }
   return outputArray;
-};
+}
 
-// Function to get Cross-Site Request Forgery (CSRF) token
-const getCsrfToken = () => {
-  console.log('Getting CSRF token.');
-  return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-};
+/**
+ * Function to get Cross Site Request Forgery (CSRF) token.
+ * @returns {string} The CSRF token.
+ */
+function getCsrfToken() {
+  console.log("Getting CSRF token.");
+  return document
+    .querySelector('meta[name="csrf-token"]')
+    .getAttribute("content");
+}
 
-// Code snippet adapted from: https://github.com/fgerschau/web-push-notification-example/blob/master/client/index.js
-// Function to set subscribe message based on whether the user is subscribed to push notifications or not
-const setSubscribeMessage = async () => {
-  console.log('Setting subscribe message.')
-  const subscribedElement = document.getElementById('subscribed');
-  const unsubscribedElement = document.getElementById('unsubscribed');
-  try {
-    const registration = await navigator.serviceWorker.getRegistration();
-    const subscription = await registration.pushManager.getSubscription();
-    subscribedElement.setAttribute('class', `${subscription ? '' : 'd-none'} fs-5`);
-    unsubscribedElement.setAttribute('class', `${subscription ? 'd-none' : ''} fs-5`);
-  } catch (error) {
-    console.log("No registration found. Not subscribed.");
-    // Hide subscribed message
-    subscribedElement.setAttribute('class', 'd-none fs-5');
-    // Show unsubscribed message
-    unsubscribedElement.setAttribute('class', 'fs-5');
-  }
-};
-
-
-// Code inspiration from: https://felixgerschau.com/web-push-notifications-tutorial/
-// Logic for when a user presses the subscribe button
-// Subscribe to push notifications
-const subscribeToPushNotifications = async () => {
-  // Check if Service Workers are supported in the browser
-  // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/ready#example
-  if ('serviceWorker' in navigator) {
-    console.log('Browser supports Service Workers. Registering Service Worker.');
-    // Register the Service Worker
-    await navigator.serviceWorker.register('/sw.js', { scope: '/' });
-    console.log('Waiting for Service Worker to be ready...');
-    await navigator.serviceWorker.ready.then(async function (registration) {
-      console.log('Service Worker registered and active.');
-      // Get selected server(s) from select element
-      const selectElement = document.getElementById('server-select');
-      const servers = [...selectElement.selectedOptions]
-        .map(option => option.value);
-      // Check servers is populated with at least one ID
-      if (!(servers.length)) {
-        console.error('Select at least one server to subscribe to push notifications.');
-        return;
+/**
+ * Set subscription status based on whether the user has an active subscription.
+ */
+async function setSubscriptionStatus() {
+  console.log("Setting subscription status.");
+  const subscribedElement = document.getElementById("subscribed");
+  const unsubscribedElement = document.getElementById("unsubscribed");
+  navigator.serviceWorker
+    .getRegistration()
+    .then((registration) => {
+      return registration.pushManager.getSubscription();
+    })
+    .then((subscription) => {
+      // Set subscription status message based on whether the user is subscribed
+      subscribedElement.setAttribute(
+        "class",
+        `${subscription ? "" : "d-none"}`
+      );
+      unsubscribedElement.setAttribute(
+        "class",
+        `${subscription ? "d-none" : ""}`
+      );
+      console.log("Successfully set subscription status.");
+    })
+    .catch((err) => {
+      if (err.message === "registration is undefined") {
+        console.log("Service Worker registration not found.");
+      } else {
+        console.error(`Failed to set subscription status: ${err}`);
       }
-      console.log(`Server IDs selected: ${servers}`);
-      // Subscribe to push notifications
-      console.log('Subscribing to push notifications.');
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-      });
-      // Send message to the Service Worker (sw.js) to save the subscription
-      console.log('Sending message to Service Worker.');
-      registration.active.postMessage({
-        action: 'SAVE_SUBSCRIPTION',
-        subscription: JSON.stringify(subscription)
-      });
-      // Create object containing selected server(s) and subscription data
-      const data = {
-        servers: servers,
-        subscription: subscription
-      };
-      console.log(`Subscription endpoint: ${data.subscription.endpoint}`);
-      // Send subscription information to the backend API
-      await fetch('/add-subscription', {
-        credentials: 'same-origin',
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-          'CSRF-Token': getCsrfToken()
-        }
-      });
-      setSubscribeMessage();
+      // Hide subscribed message
+      subscribedElement.setAttribute("class", "d-none");
     });
-  } else {
-    console.log('Browser does not support Service Workers.');
-    return;
-  };
-};
+}
 
-// Logic for when a user presses the unsubscribe button
-// Unsubscribe from push notifications
-const unsubscribeFromPushNotifications = async () => {
-  console.log('Getting registration to unsubscribe from push notifications.');
-  // Get registration
-  await navigator.serviceWorker.getRegistration()
-    .then(async function (registration) {
-      // Get current subscription
-      console.log('Getting subscription to unsubscribe from push notifications.');
-      const subscription = await registration.pushManager.getSubscription();
-      // Send message to the Service Worker (sw.js) to delete the subscription
-      console.log('Sending message to Service Worker.');
-      registration.active.postMessage({
-        action: 'DELETE_SUBSCRIPTION'
-      });
-      // Send backend API request to unsubscribe from push notifications
-      console.log('Removing subscription.');
-      await fetch('/remove-subscription', {
-        credentials: 'same-origin',
-        method: 'DELETE',
-        body: JSON.stringify({ endpoint: subscription.endpoint }),
-        headers: {
-          'Content-Type': 'application/json',
-          'CSRF-Token': getCsrfToken()
+/**
+ * Subscribe to PlanetSide 2 alert push notifications.
+ */
+async function subscribeToPushNotifications() {
+  // Check if Service Workers are supported for the browser
+  if ("serviceWorker" in navigator) {
+    console.log("Registering Service Worker.");
+    navigator.serviceWorker
+      .register("/sw.js", { scope: "/" })
+      .then((registration) => {
+        console.log("Service Worker registration successful.");
+        // Get selected PlanetSide 2 servers
+        const checkedServers = [
+          ...document.querySelectorAll("input:checked"),
+        ].map((check) => check.value);
+        if (!checkedServers.length) {
+          console.error(
+            "Check at least one PlanetSide 2 server to subscribe to push notification for."
+          );
+          return;
         }
+        console.log(`PlanetSide 2 server IDs selected: ${checkedServers}`);
+        console.log("Subscribing to push notifications.");
+        registration.pushManager
+          .subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+          })
+          .then((subscription) => {
+            // Send message to the Service Worker to save the subscription
+            registration.active.postMessage({
+              action: "SAVE_SUBSCRIPTION",
+              subscription: JSON.stringify(subscription),
+            });
+            console.log(`Subscription endpoint: ${subscription.endpoint}`);
+            fetch("/api/post-subscription", {
+              credentials: "same-origin",
+              method: "POST",
+              body: JSON.stringify({
+                servers: checkedServers,
+                subscription: subscription,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+                "CSRF-Token": getCsrfToken(),
+              },
+            });
+            setSubscriptionStatus();
+          })
+          .catch((err) => {
+            console.error(`Failed to subscribe to push notifications: ${err}`);
+          });
+      })
+      .catch((err) => {
+        console.error(`Service Worker registration failed: ${err}`);
       });
-      console.log('Unsubscribing from push notifications.');
-      await subscription.unsubscribe();
-      // Finally, remove Service Worker
-      console.log('Removing Service Worker.');
-      await registration.unregister();
-      console.log('Successfully unsubscribed from push notifications.');
-      setSubscribeMessage();
+  } else {
+    console.error("Browser does not support Service Workers.");
+    alert(
+      "Your browser does not support Service Workers and therefore, you cannot use PS2Alert.me."
+    );
+  }
+}
+
+/**
+ * Unsubscribe from PlanetSide 2 alert push notifications.
+ */
+async function unsubscribeFromPushNotifications() {
+  navigator.serviceWorker
+    .getRegistration()
+    .then((registration) => {
+      console.log(
+        "Getting subscription to unsubscribe from push notifications."
+      );
+      registration.pushManager
+        .getSubscription()
+        .then((subscription) => {
+          // Send message to the Service Worker to delete the subscription
+          registration.active.postMessage({ action: "DELETE_SUBSCRIPTION" });
+          console.log("Unsubscribing from push notifications.");
+          subscription.unsubscribe();
+          fetch("/api/delete-subscription", {
+            credentials: "same-origin",
+            method: "DELETE",
+            body: JSON.stringify({ endpoint: subscription.endpoint }),
+            headers: {
+              "Content-Type": "application/json",
+              "CSRF-Token": getCsrfToken(),
+            },
+          });
+          registration.unregister();
+          setSubscriptionStatus();
+        })
+        .catch((err) => {
+          console.error(
+            `Failed to unsubscribe from push notifications: ${err}`
+          );
+        });
+    })
+    .catch((err) => {
+      console.error(`Failed to get Service Worker registration: ${err}`);
     });
 }
 
 // Add event listeners for subscribe and unsubscribe events
-document.getElementById('subscribebutton').addEventListener('click', subscribeToPushNotifications);
-document.getElementById('unsubscribebutton').addEventListener('click', unsubscribeFromPushNotifications);
+document
+  .getElementById("subscribe")
+  .addEventListener("click", subscribeToPushNotifications);
+document
+  .getElementById("unsubscribe")
+  .addEventListener("click", unsubscribeFromPushNotifications);
 
-// Show Bootstrap modal for cookie
-const cookieModalEl = document.getElementById('cookiemodal');
-new bootstrap.Modal(cookieModalEl).show();
+// Show Bootstrap modal
+const cookieModal = document.getElementById("cookiemodal");
+new bootstrap.Modal(cookieModal).show();
 
 // Set subscribe message when loading the page
-setSubscribeMessage();
+setSubscriptionStatus();
