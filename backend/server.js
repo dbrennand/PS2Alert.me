@@ -42,7 +42,6 @@ app.use(
           "'self'",
           "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css",
           "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css",
-          "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css",
         ],
         "upgrade-insecure-requests": [],
       },
