@@ -10,32 +10,6 @@ Browser notifications for PlanetSide 2 alerts.
   <img src="images/notification.png"/>
 </p>
 
-## Project Dependencies
-
-* [Express.js](https://expressjs.com/)
-
-* [Helmet](https://www.npmjs.com/package/helmet)
-
-* [cookie-parser](https://github.com/expressjs/cookie-parser)
-
-* [csurf](https://github.com/expressjs/csurf)
-
-* [mongo-sanitize](https://github.com/vkarpov15/mongo-sanitize)
-
-* [web-push](https://www.npmjs.com/package/web-push)
-
-* [Mongoose](https://mongoosejs.com/)
-
-* [amqplib](https://github.com/squaremo/amqp.node)
-
-* [ps2census](https://github.com/microwavekonijn/ps2census)
-
-* [Pino](https://github.com/pinojs/pino)
-
-### Service Worker
-
-* [idb-keyval](https://github.com/jakearchibald/idb-keyval)
-
 ## Introduction
 
 PS2Alert.me allows a user to receive push notifications for PlanetSide 2 alerts in their browser. The application achieves this by leveraging [Service Workers](https://developers.google.com/web/fundamentals/primers/service-workers), the [IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API), [Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API), [Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API) and [Push Services](https://developers.google.com/web/ilt/pwa/introduction-to-push-notifications#push_notification_terms).
@@ -145,10 +119,6 @@ The project stack can be deployed locally using [Docker](https://www.docker.com/
     ```
 
 The frontend will then be available at: http://localhost:8080
-
-## Authors -- Contributors
-
-* [**dbrennand**](https://github.com/dbrennand) - *Author*
 
 ## License
 This project is licensed under the GNU GENERAL PUBLIC LICENSE Version 3 - see the [LICENSE](LICENSE) for details.
