@@ -189,3 +189,18 @@ new bootstrap.Modal(cookieModal).show();
 
 // Set subscribe message when loading the page
 setSubscriptionStatus();
+
+// Persist checkbox state across page reloads
+const checkboxes = document.querySelectorAll("input");
+const checkboxValues = JSON.parse(localStorage.getItem("checkboxValues")) || {};
+checkboxes.forEach((checkbox) => {
+  checkbox.addEventListener("click", (event) => {
+    console.log(`Saving ${event.target.id} checkbox state.`);
+    checkboxValues[event.target.id] = event.target.checked;
+    localStorage.setItem("checkboxValues", JSON.stringify(checkboxValues));
+  });
+});
+
+Object.entries(checkboxValues).forEach(([id, state]) => {
+  document.getElementById(id).checked = state;
+});
