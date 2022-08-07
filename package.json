@@ -24,7 +24,7 @@
     "express": "^4.17.3",
     "helmet": "^5.0.2",
     "mongo-sanitize": "github:vkarpov15/mongo-sanitize#master",
-    "mongoose": "^6.2.6",
+    "mongoose": "^6.5.1",
     "pino-http": "^6.6.0",
     "pug": "^3.0.2"
   },
